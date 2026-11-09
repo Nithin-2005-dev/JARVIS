@@ -1,4 +1,4 @@
-# J.A.R.V.I.S. — Stages 1–4: PayFlow Event Intelligence Prototype
+# J.A.R.V.I.S. — Stages 1–5: PayFlow Event Intelligence Prototype
 
 J.A.R.V.I.S. currently includes the Stage 1 deterministic PayFlow simulator and the Stage 2 multi-source event ingestion engine. Python 3.10+ is required; no third-party dependencies are used.
 
@@ -28,7 +28,7 @@ Use `python3 -m payflow_simulator.cli --help` for options. Scenarios: `all`, `no
 - `data/sample_events.jsonl`: generated sample.
 - `docs/`: architecture, engineering, specification, milestone and troubleshooting notes.
 
-The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events. The processing command enriches and classifies ingested rows, annotates event-time windows, detects repeat/frequency patterns, and writes recoverable output to the same SQLite database. Stage 4 correlates processed records with explainable evidence, conservative incident grouping, stable IDs, and history. See [correlation architecture](docs/architecture/event-correlation-architecture.md), [Stage 4 report](docs/milestones/milestone-04.md), and [known limitations](docs/troubleshooting/known-issues.md).
+The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events. The processing command enriches and classifies ingested rows, annotates event-time windows, detects repeat/frequency patterns, and writes recoverable output to the same SQLite database. Stage 4 correlates processed records with explainable evidence, conservative incident grouping, stable IDs, and history. Stage 5 ranks competing root-cause hypotheses over incident evidence, preserves report snapshots, and explicitly allows inconclusive outcomes. It does not confirm causes or equate correlation with causation. See the [RCA architecture](docs/architecture/root-cause-analysis-architecture.md), [Stage 5 report](docs/milestones/milestone-05.md), and [known limitations](docs/troubleshooting/known-issues.md).
 
 ## Correlation and investigation
 
@@ -38,6 +38,8 @@ After ingestion and processing, run:
 python3 -m payflow_simulator.correlation_cli --database data/events.sqlite --config data/correlation-config.example.json run --measure-memory
 python3 -m payflow_simulator.correlation_cli --database data/events.sqlite list
 python3 -m payflow_simulator.correlation_cli --database data/events.sqlite stats
+python3 -m payflow_simulator.rca_cli --database data/events.sqlite investigate INCIDENT_ID
+python3 -m payflow_simulator.rca_cli --database data/events.sqlite compare INVESTIGATION_ID
 ```
 
-Inspect an incident with `show INCIDENT_ID`, `events INCIDENT_ID`, `evidence INCIDENT_ID`, and `history INCIDENT_ID`; inspect event neighbors with `related EVENT_ID`. Correlation scores are heuristics, not probabilities, and event relationships do not establish cause. Reproduce the labeled synthetic evaluation with `python3 -m payflow_simulator.correlation.evaluate --output-dir data/evaluation`.
+Inspect an incident with `show INCIDENT_ID`, `events INCIDENT_ID`, `evidence INCIDENT_ID`, and `history INCIDENT_ID`; inspect event neighbors with `related EVENT_ID`. Correlation scores are heuristics, not probabilities, and event relationships do not establish cause. RCA exposes `investigate`, `show`, `hypothesis`, `evidence`, `compare`, `history`, and `report`; see [RCA API/CLI](docs/specifications/rca-api.md). Reproduce Stage 4 evaluation with `python3 -m payflow_simulator.correlation.evaluate --output-dir data/evaluation`; reproduce Stage 5 evaluation and data with `python3 -m payflow_simulator.rca.evaluate --output data/evaluation/stage5_rca_metrics.json --dataset-dir data/evaluation`.

@@ -25,3 +25,6 @@ Stage 4 reads processed payloads and writes explainable correlation edges, heuri
 ## Runtime path
 
 `python -m payflow_simulator.cli` parses options, constructs `Simulator`, generates immutable `Event` instances, validates serialized events, and writes one compact JSON object per line. See [component interactions](component-interactions.md).
+# Stage 5 addition
+
+The Root Cause Analysis layer consumes Stage 4 incident membership, processed event payloads, and correlation evidence. It writes separately versioned investigation snapshots, candidate hypotheses, evidence assessments, and history to the same local SQLite database. It distinguishes observed facts from associations and configured inferences; reports can be inconclusive and do not confirm causes. See [RCA architecture](root-cause-analysis-architecture.md).

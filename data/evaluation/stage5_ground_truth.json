@@ -1,0 +1,29 @@
+{
+  "ambiguous_multiple_failures": {
+    "initiating_event_ids": [
+      "db-alt",
+      "network-alt"
+    ],
+    "interpretation": "synthetic scenario label; not provided to RCA engine"
+  },
+  "database_pool_cascade": {
+    "initiating_event_ids": "db-root",
+    "interpretation": "synthetic scenario label; not provided to RCA engine"
+  },
+  "inconclusive_missing_signals": {
+    "initiating_event_ids": null,
+    "interpretation": "synthetic scenario label; not provided to RCA engine"
+  },
+  "misleading_earliest_event": {
+    "initiating_event_ids": "pool-root",
+    "interpretation": "synthetic scenario label; not provided to RCA engine"
+  },
+  "network_initiator": {
+    "initiating_event_ids": "network-root",
+    "interpretation": "synthetic scenario label; not provided to RCA engine"
+  },
+  "resource_exhaustion": {
+    "initiating_event_ids": "resource-root",
+    "interpretation": "synthetic scenario label; not provided to RCA engine"
+  }
+}

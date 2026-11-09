@@ -1,0 +1,96 @@
+{
+  "false_root_cause_assertion_rate": 0.0,
+  "inconclusive_assessment_rate": 0.16666666666666666,
+  "labeled_root_cause_scenarios": 5,
+  "methodology": "Six fixed synthetic incident groups, manually labeled initiating event(s); truth labels are excluded from engine input. Metrics are scenario-level and do not establish real-world accuracy.",
+  "performance": {
+    "elapsed_seconds": 0.001357,
+    "events_evaluated": 15,
+    "events_per_second": 11053.07,
+    "memory_measurement": "not collected"
+  },
+  "scenario_count": 6,
+  "scenarios": [
+    {
+      "assessment_status": "leading_hypothesis",
+      "ranked_candidates": [
+        "db-root",
+        "pay-symptom",
+        "api-symptom"
+      ],
+      "scenario": "database_pool_cascade",
+      "top1_correct": true,
+      "truth": [
+        "db-root"
+      ],
+      "truth_in_top_k": true
+    },
+    {
+      "assessment_status": "leading_hypothesis",
+      "ranked_candidates": [
+        "network-root",
+        "notify-symptom",
+        "pay-later"
+      ],
+      "scenario": "network_initiator",
+      "top1_correct": true,
+      "truth": [
+        "network-root"
+      ],
+      "truth_in_top_k": true
+    },
+    {
+      "assessment_status": "leading_hypothesis",
+      "ranked_candidates": [
+        "resource-root",
+        "pool-symptom"
+      ],
+      "scenario": "resource_exhaustion",
+      "top1_correct": true,
+      "truth": [
+        "resource-root"
+      ],
+      "truth_in_top_k": true
+    },
+    {
+      "assessment_status": "competing_hypotheses",
+      "ranked_candidates": [
+        "db-alt",
+        "network-alt"
+      ],
+      "scenario": "ambiguous_multiple_failures",
+      "top1_correct": true,
+      "truth": [
+        "db-alt",
+        "network-alt"
+      ],
+      "truth_in_top_k": true
+    },
+    {
+      "assessment_status": "inconclusive",
+      "ranked_candidates": [
+        "generic-2",
+        "generic-1"
+      ],
+      "scenario": "inconclusive_missing_signals",
+      "truth": null
+    },
+    {
+      "assessment_status": "leading_hypothesis",
+      "ranked_candidates": [
+        "pool-root",
+        "early-symptom",
+        "later-symptom"
+      ],
+      "scenario": "misleading_earliest_event",
+      "top1_correct": true,
+      "truth": [
+        "pool-root"
+      ],
+      "truth_in_top_k": true
+    }
+  ],
+  "top1_accuracy": 1.0,
+  "top_k": 3,
+  "top_k_candidate_recall": 1.0
+}

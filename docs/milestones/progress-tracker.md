@@ -42,7 +42,20 @@
 - [x] Add independently scored evidence, heuristic confidence, trace diagnostics, conservative incident grouping, stable IDs, merge/split/re-resolution history, and late-event reevaluation.
 - [x] Add additive SQLite persistence, idempotent runs, CLI investigation commands, configuration, deterministic labeled evaluation, and Stage 1–3 regression tests.
 - [x] Update architecture, schema, engineering, specifications, decisions, evaluation, known issues, milestone report, and progress tracker.
-- [ ] Stage 5 — not started; requires explicit authorization.
+- [x] Stage 5 — Root Cause Analysis Engine implemented; report and verification below.
+
+## Stage 5
+
+- [x] Inspect Stage 1–4 code, storage contracts, event schema, docs, and regression suite.
+- [x] Add incident-scoped candidate identification, evidence collection, configurable heuristic scoring, alternatives, competing and inconclusive outcomes.
+- [x] Add immutable transactional SQLite snapshots, hypotheses, evidence, history, Python API, and CLI.
+- [x] Add synthetic labeled evaluation for top-1, top-k, inconclusive and false assertion rates.
+- [x] Document RCA architecture, safeguards, scoring, schema, persistence, API/CLI, evaluation, limitations, ADR, and milestone report.
+- [x] Run focused RCA tests, synthetic evaluation, and complete Stage 1–4 regression suite; actual final results recorded in `milestone-05.md`.
+
+### Stage 5 synthetic evaluation
+
+Six deterministic scenarios with 15 observations: 5 labeled initiator cases and 1 no-answer case. Current measured top-1 is 1.0 (5/5), top-3 candidate recall 1.0 (5/5), inconclusive rate 1/6 (0.1667), false assertion 0/6 (0.0). One local in-memory run took 0.001357 seconds (11,053.07 events/s), excluding SQLite I/O. Results are specific to handcrafted synthetic cases and are not production accuracy estimates. See `data/evaluation/stage5_rca_metrics.json`.
 
 ### Stage 4 synthetic evaluation and performance
 

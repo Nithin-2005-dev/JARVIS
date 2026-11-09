@@ -31,3 +31,11 @@
 - SQLite is a local single-writer store. There is no multi-host coordination, network REST server, retention/archival process, or asynchronous streaming correlation.
 - Full processed-event reevaluation on each run can become expensive as the local database grows.
 - Synthetic evaluation has easy, explicit labels and should not be read as production precision or recall.
+# Stage 5 RCA limitations
+
+- There is no metrics or independent verification adapter. Reports include explicit missing evidence and never mark a cause confirmed.
+- Dependency relationships come from configurable local settings; stale topology may create or hide plausible paths.
+- Heuristic weights/strengths are rule-based and not calibrated. Treat rank as an investigation aid, not a probability.
+- Shared resources and Stage 4 edges express context/relatedness and do not establish causal direction.
+- Synthetic metrics in `data/evaluation/stage5_rca_metrics.json` come from six handcrafted scenarios and should not be used as a production accuracy estimate.
+- Current candidate/resource comparison is quadratic in the size of one incident; very large incidents need indexed resource evidence.

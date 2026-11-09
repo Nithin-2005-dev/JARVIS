@@ -64,6 +64,10 @@ Kafka/Kubernetes, a web framework, and live timestamps were deferred because the
 
 **Decision:** Recompute components from current processed data and reconcile membership transactionally; preserve the oldest incident ID on merge and the anchor-containing component ID on split. **Reason:** Late arrivals and changed rules must be recoverable and repeated runs idempotent. **Trade-off:** Full rebuild costs more than incremental distributed state and requires single-writer local SQLite.
 
+## ADR-016: Evidence-driven RCA snapshots
+
+**Decision:** Implement RCA as a separate incident-scoped layer that reads processed events and Stage 4 evidence and writes immutable fingerprinted report snapshots in SQLite. Distinguish observed facts, correlated relationships, configured dependency inferences, contradictions, and missing evidence. Use a configurable heuristic score, retain competing hypotheses, and return inconclusive when no candidate clears the evidence gate. **Reason:** Reproducibility and traceable reasoning matter more than forcing a single answer; correlation must not be represented as cause. **Trade-off:** Hand-authored strengths/reliabilities are not calibrated probabilities, configured topology may be wrong, and no cause can be independently confirmed without external signals.
+
 ## Rejected Stage 4 approaches
 
 - All-pairs comparison: rejected because dense/O(n²) work is uncontrolled; candidate generation is indexed and bounded.
