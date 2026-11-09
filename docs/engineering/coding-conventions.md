@@ -11,3 +11,6 @@
 - Preserve source events; write derived processing data separately and record every terminal attempt state.
 - Emit structured logging fields and report processing throughput/latency without putting non-deterministic timing into event-time fields.
 - Use deterministic `unittest` cases without network or external services.
+# Stage 4 conventions
+
+Correlation models are immutable slotted dataclasses. Strategy evidence is explicit JSON-compatible data; confidence fields are named and documented as heuristics. Candidate generation, evaluation, grouping, and persistence remain separate modules. Correlation failures are logged with a run ID and persisted as failed run status after transactional rollback. CLI output is JSON for repeatable investigation and automation.

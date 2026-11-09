@@ -30,3 +30,12 @@ No failed implementation approach was needed. Kafka, Kubernetes, and web framewo
 | Persist pattern observations by event ID/window | Make counts durable across processing batches and explicit replay idempotent | Exact-message signatures are sensitive to message text variation |
 | Count thresholds with evidence capped at 20 IDs | Reproducible lightweight pattern signals with bounded output | Pattern counts are absolute thresholds rather than adaptive baselines |
 | Persist claim attempt and stage history | Recover failures without deleting accepted source rows | History/output tables grow until operators apply retention |
+# Stage 4 design decisions
+
+- Correlation consumes only successful processed records so failed Stage 3 events remain recoverable and canonical records remain immutable.
+- Trace/resource matches are exact and independently evidenced. Time, dependency, cross-service and pattern indicators contribute separate evidence.
+- Pairwise confidence is a transparent configured weighted mean. The name “confidence” is explicitly heuristic; this is not a probability estimate.
+- Incident grouping is intentionally more conservative than relationship storage. Text similarity and temporal proximity alone do not join incidents.
+- Reconciliation uses deterministic UUID5 initial IDs, stable anchors, explicit merged targets and current membership rows. A transactional full rebuild was chosen over incremental mutations to simplify correction after late events.
+- Approximate message comparisons are bounded to nearby categorized failures or Stage 3 evidence references. This rejects a global similarity search because its candidate generation and false-positive costs grow quickly.
+- Synthetic pair precision/recall is reported separately from performance and labeled as a narrow deterministic evaluation, not a production quality claim.

@@ -22,3 +22,12 @@
 - Processing history and pattern observations have no automatic retention policy.
 - SQLite finalizes each event atomically; local write/commit latency dominates the 5,000-event benchmark. This milestone establishes correctness and recoverability, not a high-throughput target.
 - The additive lifecycle/security event types are available to producers but the Stage 1 simulator does not emit them.
+# Stage 4 known limitations
+
+- Scores are heuristic, not statistically calibrated; a high score is not a causal statement or a probability.
+- Trace incompleteness is only an observation: without expected span/service manifests, a single observed service cannot prove a missing span.
+- Similar-message matching is limited to nearby failure candidates or Stage 3 pattern evidence, so distant repeat failures may not link.
+- Dense trace/resource/time buckets can exceed `max_candidates`; the run fails before replacing persisted correlation relationships.
+- SQLite is a local single-writer store. There is no multi-host coordination, network REST server, retention/archival process, or asynchronous streaming correlation.
+- Full processed-event reevaluation on each run can become expensive as the local database grows.
+- Synthetic evaluation has easy, explicit labels and should not be read as production precision or recall.

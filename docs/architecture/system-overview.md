@@ -20,6 +20,8 @@ Stage 2 adds ingestion for JSON/JSONL, CSV, REST GET endpoints, and simulated li
 
 Stage 3 processes ingested records into separate enriched/classified/windowed payloads and deterministic pattern signals. Processing lifecycle and evidence are stored in SQLite so failed events can be retried and successful events explicitly replayed. See [event processing architecture](event-processing-architecture.md).
 
+Stage 4 reads processed payloads and writes explainable correlation edges, heuristic confidence scores, incident membership, lifecycle history, trace diagnostics, and run metrics into additive SQLite tables. Correlation means observed association and does not prove cause. See [event correlation architecture](event-correlation-architecture.md).
+
 ## Runtime path
 
 `python -m payflow_simulator.cli` parses options, constructs `Simulator`, generates immutable `Event` instances, validates serialized events, and writes one compact JSON object per line. See [component interactions](component-interactions.md).

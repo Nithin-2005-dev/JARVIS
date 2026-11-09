@@ -1,0 +1,28 @@
+{
+  "temporal_window_seconds": 60,
+  "max_lateness_seconds": 300,
+  "pattern_similarity_threshold": 0.82,
+  "incident_min_confidence": 0.6,
+  "max_candidates": 250000,
+  "strategy_weights": {
+    "trace": 1.0,
+    "resource": 0.9,
+    "dependency": 0.55,
+    "temporal": 0.35,
+    "pattern": 0.3,
+    "cross_service": 0.25
+  },
+  "service_dependencies": {
+    "api-gateway": ["authentication-service", "payment-service"],
+    "authentication-service": ["payment-service"],
+    "payment-service": ["database-service", "notification-service"]
+  },
+  "resource_metadata_keys": [
+    "resource_id", "database", "database_id", "db_instance", "server_id",
+    "host", "hostname", "api", "endpoint", "network_component", "resource"
+  ],
+  "failure_categories": [
+    "infrastructure_failures", "database_failures", "network_failures",
+    "authentication_failures", "application_errors", "performance_degradation", "security_related"
+  ]
+}

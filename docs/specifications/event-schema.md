@@ -18,4 +18,6 @@ Types: `request_received`, `authenticated`, `payment_created`, `db_query`, `db_p
 
 The canonical v0.3 representation remains backward-compatible with Stage 1's nine top-level keys. Stage 3 additively extends the `event_type` enum with lifecycle and security signal names for classification. Ingestion normalizes UUID strings to canonical lowercase form, timestamps to UTC `Z`, severity aliases to the enum, service identifiers to lowercase kebab case, and event type spacing/hyphens to lowercase underscores. `source` and metadata remain preserved.
 
+Stage 4 does not change this source-event schema. Correlation evidence and incident data are stored in separate SQLite tables. It reads the Stage 3 processed envelope (`original_event`, `processing_timestamp`, `classification`, `temporal`, and `patterns`) and preserves event-time separately from processing time.
+
 `validate_event` rejects missing or extra keys, empty required strings, malformed UUIDs/timestamps, unsupported enum values, and non-object metadata. Metadata contents are not otherwise constrained.

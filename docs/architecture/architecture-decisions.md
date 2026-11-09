@@ -47,3 +47,26 @@ Kafka/Kubernetes, a web framework, and live timestamps were deferred because the
 ## ADR-011: Extend event-type vocabulary additively
 
 **Decision:** Add lifecycle and security event types while retaining Stage 1 values and event fields. **Reason:** Those categories need representative source events to be classified through the validated pipeline. **Trade-off:** External producers still must use an explicitly supported type or extend the contract deliberately.
+
+## ADR-012: Correlation reads processed events and stores separate evidence
+
+**Decision:** Stage 4 reads Stage 3 `processed_events` and adds SQLite tables for runs, edges, evidence, trace diagnostics, incidents, membership, and history. **Reason:** Derived relationship evidence must not mutate canonical event records; one local database keeps Stage 1–3 lineage available. **Trade-off:** Full local reconciliation is single-host and SQLite-bound.
+
+## ADR-013: Bounded indexed candidate generation
+
+**Decision:** Generate pairs using trace/resource buckets and an event-time sweep keyed by failure category and service dependency; impose `max_candidates`. **Reason:** Avoid an uncontrolled all-pairs scan while preserving explicit shared-key and time-based signals. **Trade-off:** Dense keys can still create quadratic candidate output; the ceiling rejects an oversized run. Message similarity is limited to nearby failure candidates or explicit Stage 3 evidence, so distant similar events may be missed.
+
+## ADR-014: Heuristic evidence and conservative incident policy
+
+**Decision:** Store each strategy's evidence and score, combine with configurable weighted means, and call the result a heuristic confidence score. Require trace/resource evidence or both temporal and dependency signals; distinct trace IDs require a shared resource to bridge. **Reason:** Relationships need to be inspectable and false positives should not arise from time, text, or adjacent independent requests alone. **Trade-off:** Scores are not calibrated probabilities; strict grouping can miss genuine incidents with no trace, resource, or intersecting signals.
+
+## ADR-015: Deterministic incident reconciliation
+
+**Decision:** Recompute components from current processed data and reconcile membership transactionally; preserve the oldest incident ID on merge and the anchor-containing component ID on split. **Reason:** Late arrivals and changed rules must be recoverable and repeated runs idempotent. **Trade-off:** Full rebuild costs more than incremental distributed state and requires single-writer local SQLite.
+
+## Rejected Stage 4 approaches
+
+- All-pairs comparison: rejected because dense/O(n²) work is uncontrolled; candidate generation is indexed and bounded.
+- Time-window overlap as incident identity: rejected because unrelated events can be simultaneous.
+- Message similarity as a decisive signal: rejected because similar wording can describe different failures.
+- Statistical probabilities, ML, LLMs, causality, Kafka, and Kubernetes: deferred because there is no calibration dataset or distributed deployment requirement in this milestone.

@@ -20,4 +20,4 @@ The processing CLI reads the Stage 2 `events` table and writes to separate `proc
 
 The stages are implemented behind small replaceable classes and a `ProcessingStore` protocol. `SQLiteProcessingStore` atomically claims rows, supports retry after a failed or stale claim, and upserts processed output on explicit replay. It is a local single-process implementation; the protocol creates an extension seam but does not claim distributed coordination.
 
-Patterns are deterministic event-count signals scoped to fixed event-time windows. Shared text/signatures across services indicate repetition only; the engine does not infer event correlation, causality, or incidents.
+Patterns are deterministic event-count signals scoped to fixed event-time windows. Shared text/signatures across services indicate repetition only. Stage 4 consumes these outputs as optional correlation evidence and applies separate incident grouping rules; it does not infer causality or root cause. See [event correlation architecture](event-correlation-architecture.md).

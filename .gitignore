@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+data/quarantine.jsonl

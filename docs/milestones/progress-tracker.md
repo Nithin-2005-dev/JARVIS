@@ -33,7 +33,28 @@
 - [x] Add durable state, history, idempotency, retry, stale claim recovery, and explicit replay.
 - [x] Add structured logs, metrics, configuration, CLI, and required documentation.
 - [x] Run Stage 1/2 regression and Stage 3 tests.
-- [ ] Stage 4 — not started; requires explicit authorization.
+- [x] Stage 4 — Event Correlation Engine implemented; verification and evaluation recorded below.
+
+## Stage 4
+
+- [x] Inspect existing event schema, Stage 2 ingestion, Stage 3 processed payloads/storage, docs, and regression suite.
+- [x] Add indexed temporal, trace, dependency, resource, signature, and cross-service candidate generation with a hard candidate ceiling.
+- [x] Add independently scored evidence, heuristic confidence, trace diagnostics, conservative incident grouping, stable IDs, merge/split/re-resolution history, and late-event reevaluation.
+- [x] Add additive SQLite persistence, idempotent runs, CLI investigation commands, configuration, deterministic labeled evaluation, and Stage 1–3 regression tests.
+- [x] Update architecture, schema, engineering, specifications, decisions, evaluation, known issues, milestone report, and progress tracker.
+- [ ] Stage 5 — not started; requires explicit authorization.
+
+### Stage 4 synthetic evaluation and performance
+
+`python3 -m payflow_simulator.correlation.evaluate --output-dir data/evaluation` on the default 100-event fixture: 20 labeled three-event incidents and 20 unrelated simultaneous pairs. Pairwise co-membership: 60 ground-truth related pairs, 60 predicted, 60 true positives, 0 false positives, 0 false negatives; precision 1.000, recall 1.000. This fixture is intentionally controlled and is not a production accuracy estimate. One final local measurement reported 80 candidate pairs, 0.1012 s candidate generation, 0.0969 s relationship evaluation, 0.3138 s total run, 319 events/s, and 586,997 traced peak bytes. Timings vary by host.
+
+### Stage 4 verification
+
+- `python3 -m unittest discover -s tests -v` — 53 tests passed, 0 failures/errors in 6.621 seconds, including Stage 1–3 regression.
+- Correlation CLI help displayed run/list/show/events/evidence/history/related/stats commands.
+- Evaluation generated `data/evaluation/stage4_events.jsonl` and `data/evaluation/stage4_ground_truth.json` with the measured results above.
+- Temporary-database end-to-end sample: 63 ingested, 63 processed, 0 failed, 221 correlation edges and 9 active incidents.
+- Empty-database CLI `stats` reports zero processed records and no incidents.
 
 ### Performance measurement
 
