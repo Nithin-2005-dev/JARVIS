@@ -8,3 +8,16 @@ frontend/node_modules/
 frontend/.next/
 frontend/next-env.d.ts
 frontend/tsconfig.tsbuildinfo
+frontend/test-results/
+frontend/playwright-report/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+backups/
+!backups/.gitkeep
+data/*.db
+data/*.db-shm
+data/*.db-wal

@@ -1,0 +1,34 @@
+services:
+  api:
+    environment:
+      JARVIS_ENV: production
+      JARVIS_FRONTEND_ORIGINS: https://${JARVIS_DOMAIN:?set JARVIS_DOMAIN}
+  frontend:
+    build:
+      args:
+        NEXT_PUBLIC_API_BASE_URL: https://${JARVIS_DOMAIN:?set JARVIS_DOMAIN}
+  caddy:
+    image: caddy:2.9.1-alpine
+    environment:
+      JARVIS_DOMAIN: ${JARVIS_DOMAIN:?set JARVIS_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [app]
+    depends_on:
+      frontend:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.5
+
+volumes:
+  caddy_data:
+  caddy_config:

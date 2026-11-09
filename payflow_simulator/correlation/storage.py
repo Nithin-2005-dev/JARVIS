@@ -63,6 +63,12 @@ class SQLiteCorrelationStore:
         edge_details = [{"source_event_id": edge.source_event_id, "target_event_id": edge.target_event_id,
                          "strategies": [item.strategy for item in edge.evidence],
                          "confidence_score": edge.confidence_score} for edge in edges]
+        edges_by_event: dict[str, list[dict[str, Any]]] = {}
+        edge_order = {(edge["source_event_id"], edge["target_event_id"]): index
+                      for index, edge in enumerate(edge_details)}
+        for edge in edge_details:
+            edges_by_event.setdefault(edge["source_event_id"], []).append(edge)
+            edges_by_event.setdefault(edge["target_event_id"], []).append(edge)
         self.connection.execute("BEGIN IMMEDIATE")
         try:
             self.connection.execute("INSERT INTO correlation_runs(run_id,created_at,details,status) VALUES(?,?,?,'completed') ON CONFLICT(run_id) DO UPDATE SET created_at=excluded.created_at,details=excluded.details,status='completed'", (run_id, now, _json(details)))
@@ -86,6 +92,22 @@ class SQLiteCorrelationStore:
                 group[0],
             ))
             for group in normalized_components:
+                group_ids = set(group)
+                supporting_edges: list[dict[str, Any]] = []
+                supporting_by_event: dict[str, list[dict[str, Any]]] = {}
+                seen_edges: set[tuple[str, str]] = set()
+                for event_id in group:
+                    for edge in edges_by_event.get(event_id, []):
+                        source_id, target_id = edge["source_event_id"], edge["target_event_id"]
+                        edge_key = (source_id, target_id)
+                        if source_id in group_ids and target_id in group_ids and edge_key not in seen_edges:
+                            seen_edges.add(edge_key)
+                            supporting_edges.append(edge)
+                            supporting_by_event.setdefault(source_id, []).append(edge)
+                            supporting_by_event.setdefault(target_id, []).append(edge)
+                supporting_edges.sort(key=lambda edge: edge_order[(edge["source_event_id"], edge["target_event_id"])])
+                for event_edges in supporting_by_event.values():
+                    event_edges.sort(key=lambda edge: edge_order[(edge["source_event_id"], edge["target_event_id"])])
                 overlapping = sorted({old_members[eid] for eid in group if eid in old_members},
                                      key=lambda iid: (old_incidents.get(iid, {}).get("created_at", now), iid))
                 # On split, the prior anchor stays with the component containing it.
@@ -105,7 +127,7 @@ class SQLiteCorrelationStore:
                 if incident_id not in old_incidents:
                     self._history(incident_id, "created", {"incident_id": incident_id, "event_ids": group,
                                    "split_from": split_from,
-                                   "supporting_relationships": [edge for edge in edge_details if edge["source_event_id"] in group and edge["target_event_id"] in group]}, now)
+                                   "supporting_relationships": supporting_edges}, now)
                 # Merge competing prior incidents only when component graph directly joins them.
                 merged_ids: list[str] = []
                 for duplicate in overlapping:
@@ -118,15 +140,14 @@ class SQLiteCorrelationStore:
                     self.connection.execute("UPDATE incidents SET status='merged',merged_into=?,updated_at=? WHERE incident_id=?", (incident_id, now, duplicate))
                     merged_ids.append(duplicate)
                     self._history(duplicate, "merged", {"merged_into": incident_id, "event_ids": group,
-                                   "supporting_relationships": [edge for edge in edge_details if edge["source_event_id"] in group and edge["target_event_id"] in group]}, now)
+                                   "supporting_relationships": supporting_edges}, now)
                 if merged_ids:
                     self._history(incident_id, "incidents_merged", {"merged_incident_ids": sorted(merged_ids),
-                                   "supporting_relationships": [edge for edge in edge_details if edge["source_event_id"] in group and edge["target_event_id"] in group]}, now)
+                                   "supporting_relationships": supporting_edges}, now)
                 for eid in group:
                     previous = old_members.get(eid)
                     if previous != incident_id:
-                        supporting = [edge for edge in edge_details if eid in {edge["source_event_id"], edge["target_event_id"]}
-                                      and edge["source_event_id"] in group and edge["target_event_id"] in group]
+                        supporting = supporting_by_event.get(eid, [])
                         self._history(incident_id, "event_added", {"event_id": eid, "previous_incident_id": previous,
                                        "supporting_relationships": supporting}, now)
                     assigned[eid] = incident_id

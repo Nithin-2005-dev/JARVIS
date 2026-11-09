@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+from dataclasses import replace
+from time import time as current_time
+from unittest.mock import patch
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -10,7 +13,7 @@ from fastapi.testclient import TestClient
 from payflow_simulator.http_api.app import create_app
 from payflow_simulator.dependency_graph.blast_radius import DependencyGraphEngine
 from payflow_simulator.dependency_graph.graph_store import SQLiteDependencyGraphStore
-from payflow_simulator.recommendations.storage import SQLiteRecommendationStore
+from payflow_simulator.http_api.security import AuthStore
 
 
 class HTTPAPITests(unittest.TestCase):
@@ -51,8 +54,68 @@ class HTTPAPITests(unittest.TestCase):
         # Invalid identifiers are returned as consistent not-found responses.
         response = self.client.patch("/api/v1/recommendations/missing/status", json={"status":"acknowledged"})
         self.assertEqual(response.status_code, 404)
+
+    def test_auth_session_roles_csrf_and_expiry_surface(self):
+        secure_client = TestClient(create_app(str(self.db), allowed_origins=["http://localhost:3000"], auth_enabled=True))
+        users = AuthStore(self.db)
+        users.create_user("viewer-one", "correct horse battery staple", "viewer")
+        users.create_user("admin-one", "another correct password", "admin")
+        unauthorized = secure_client.get("/api/v1/incidents", headers={"Origin":"http://localhost:3000"})
+        self.assertEqual(unauthorized.status_code, 401)
+        self.assertEqual(unauthorized.headers.get("access-control-allow-origin"), "http://localhost:3000")
+        token = secure_client.get("/api/v1/auth/csrf").json()["csrf_token"]
+        login = secure_client.post("/api/v1/auth/login", headers={"Origin":"http://localhost:3000","X-CSRF-Token":token}, json={"username":"viewer-one","password":"correct horse battery staple"})
+        self.assertEqual(login.status_code, 200)
+        self.assertIn("HttpOnly", login.headers.get("set-cookie", ""))
+        self.assertEqual(secure_client.get("/api/v1/auth/me").json()["user"]["role"], "viewer")
+        self.assertEqual(secure_client.get("/api/v1/admin/users").status_code, 403)
+        self.assertEqual(secure_client.patch("/api/v1/recommendations/missing/status", headers={"Origin":"http://localhost:3000","X-CSRF-Token":token}, json={"status":"acknowledged"}).status_code, 403)
+        self.assertEqual(secure_client.post("/api/v1/auth/logout", headers={"Origin":"http://localhost:3000","X-CSRF-Token":token}).status_code, 200)
+        self.assertEqual(secure_client.get("/api/v1/incidents").status_code, 401)
+
+    def test_admin_can_manage_users_and_responder_can_write(self):
+        secure_client = TestClient(create_app(str(self.db), allowed_origins=["http://localhost:3000"], auth_enabled=True))
+        AuthStore(self.db).create_user("admin-user", "a very long test password", "admin")
+        token = secure_client.get("/api/v1/auth/csrf").json()["csrf_token"]
+        response = secure_client.post("/api/v1/auth/login", headers={"Origin":"http://localhost:3000","X-CSRF-Token":token}, json={"username":"admin-user","password":"a very long test password"})
+        self.assertEqual(response.status_code, 200)
+        created = secure_client.post("/api/v1/admin/users", headers={"Origin":"http://localhost:3000","X-CSRF-Token":token}, json={"username":"responder-user","password":"responder password long","role":"responder"})
+        self.assertEqual(created.status_code, 201)
+        self.assertNotIn("password_hash", created.json())
+        self.assertIn("X-Request-ID", created.headers)
+        self.assertEqual(created.headers.get("x-frame-options"), "DENY")
+
+    def test_settings_reject_insecure_production_defaults(self):
+        from payflow_simulator.http_api.config import load_settings
+        with self.assertRaisesRegex(ValueError, "SECRET_KEY"):
+            load_settings(environ={"JARVIS_ENV":"production"})
+        with self.assertRaisesRegex(ValueError, "disabled"):
+            load_settings(environ={"JARVIS_ENV":"production","JARVIS_SECRET_KEY":"x"*40,"JARVIS_AUTH_ENABLED":"false"})
         response = self.client.post("/api/v1/recommendations/missing/feedback", json={"outcome_status":"successful"})
         self.assertEqual(response.status_code, 404)
+
+    def test_oversized_request_body_is_rejected(self):
+        from payflow_simulator.http_api.config import load_settings
+        settings = replace(load_settings(environ={"JARVIS_ENV":"testing"}), max_request_bytes=1024)
+        limited = TestClient(create_app(str(self.db), settings=settings))
+        response = limited.post("/api/v1/auth/login", content=b"x" * 2048,
+                                headers={"Content-Type":"application/json"})
+        self.assertEqual(response.status_code, 413)
+        self.assertEqual(response.json()["error"]["code"], "request_too_large")
+
+    def test_session_cookie_expires_at_configured_ttl(self):
+        from payflow_simulator.http_api.config import load_settings
+        settings = replace(load_settings(environ={"JARVIS_ENV":"testing"}), session_ttl_seconds=60)
+        AuthStore(self.db).create_user("expiry-viewer", "a valid long test password", "viewer")
+        secure_client = TestClient(create_app(str(self.db), allowed_origins=["http://localhost:3000"],
+                                              auth_enabled=True, settings=settings))
+        csrf = secure_client.get("/api/v1/auth/csrf").json()["csrf_token"]
+        login = secure_client.post("/api/v1/auth/login", headers={"Origin":"http://localhost:3000","X-CSRF-Token":csrf},
+                                   json={"username":"expiry-viewer","password":"a valid long test password"})
+        self.assertEqual(login.status_code, 200)
+        with patch("itsdangerous.timed.time.time", return_value=current_time() + 61):
+            expired = secure_client.get("/api/v1/incidents")
+        self.assertEqual(expired.status_code, 401)
 
 
 if __name__ == "__main__": unittest.main()

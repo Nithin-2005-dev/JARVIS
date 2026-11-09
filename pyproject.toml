@@ -1,0 +1,8 @@
+[tool.ruff]
+line-length = 130
+target-version = "py312"
+exclude = [".git", "__pycache__", "frontend", "data"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = ["E701", "E702"] # Existing stages use compact one-line statements; keep semantic/static checks enabled.

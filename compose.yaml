@@ -1,0 +1,63 @@
+services:
+  api:
+    image: jarvis-api:stage10
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      JARVIS_ENV: ${JARVIS_ENV:-demo}
+      JARVIS_DATABASE_URL: sqlite:////data/jarvis.sqlite
+      JARVIS_SECRET_KEY: ${JARVIS_SECRET_KEY:?set a unique secret in .env}
+      JARVIS_FRONTEND_ORIGINS: ${JARVIS_FRONTEND_ORIGINS:-http://localhost:3000}
+      JARVIS_LOG_LEVEL: ${JARVIS_LOG_LEVEL:-INFO}
+      JARVIS_AUTH_ENABLED: "true"
+      JARVIS_SESSION_TTL: ${JARVIS_SESSION_TTL:-3600}
+      JARVIS_RATE_LIMIT: ${JARVIS_RATE_LIMIT:-60}
+    volumes:
+      - jarvis_data:/data
+    ports:
+      - "127.0.0.1:${JARVIS_API_PORT:-8000}:8000"
+    networks: [app]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready', timeout=2)"]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    mem_limit: 768m
+    cpus: 1.5
+
+  frontend:
+    image: jarvis-frontend:stage10
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    ports:
+      - "127.0.0.1:${JARVIS_FRONTEND_PORT:-3000}:3000"
+    networks: [app]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    mem_limit: 512m
+    cpus: 1.0
+
+networks:
+  app:
+    driver: bridge
+    internal: false
+
+volumes:
+  jarvis_data:

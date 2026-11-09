@@ -139,3 +139,16 @@ End-to-end ingestion plus processing benchmarked 5,000 synthetic records in a te
 - [ ] Stage 10 remains not authorized/not started.
 
 Stage 9 demo run: 63 events generated, 63 processed, 9 incidents, 11 intelligence findings, and 40 recommendations available. Repeated no-reset run processed 0 additional events and retained the same incident/finding totals. See `milestone-09.md` for API timings and test detail.
+
+## Stage 10 — Production Engineering and Release Readiness
+
+- [x] Audit repository architecture, current Git state, security, storage, deployment, tests, and documentation before implementation (`stage-10-initial-audit.md`).
+- [x] Add validated configuration, API authentication, RBAC, CSRF/origin checks, request limits, structured API logs, health/readiness, and audit events.
+- [x] Add versioned Stage 10 auth/audit schema and isolated backup/verify/restore tooling.
+- [x] Add pinned dependencies, container configuration, CI/security workflows, browser tests, and a reproducible performance harness.
+- [x] Run complete backend tests (116 pass), frontend unit tests (13 pass), TypeScript, lint, production frontend build, API/frontend image builds, Compose validation, live container health, Python compile/Ruff, dependency audits, and isolated backup/restore integrity checks.
+- [x] Run Playwright browser suite against seeded real API: 4 passed, including competing blast-radius selection and protected unauthenticated API access.
+- [x] Complete 1k and 10k event performance runs; fix evidence-preserving correlation persistence scan discovered by initial 10k timeout.
+- [ ] 100k full pipeline remains incomplete: generation and ingestion succeeded, but processing exceeded the 180-second run bound. No release candidate or production capacity claim is made.
+
+Detailed measurements, conditions, and outstanding release limitations are recorded in `../evaluation/stage-10-evaluation.md`. CI workflows are configured but were not executed on GitHub; no formal penetration test was performed.

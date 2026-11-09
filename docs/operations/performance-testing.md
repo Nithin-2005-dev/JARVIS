@@ -1,0 +1,7 @@
+# Performance and Capacity Testing
+
+Run `python scripts/performance_benchmark.py --events N --warm-requests R` with API requirements installed. It creates deterministic normal simulator data, times JSONL generation, ingestion, processing, correlation, RCA on one stored incident, dependency analysis on one incident, intelligence, recommendation generation, and API list/detail/graph/overview routes. It records throughput, cold local TestClient latency, warm mean/p50/p95, failures, DB and dataset bytes, and process peak RSS where supported.
+
+The harness uses one host, one Python process, one SQLite database, synthetic normal traffic, and one execution per requested size. It is a diagnostic repeatable workload, not an SLO/load test. RCA/blast-radius/recommendation are bounded to one incident; this does not measure all incidents. Correlation candidate limits may stop larger runs. Record exact environment and output artifact with every report. Do not interpret a single run as production capacity.
+
+Stage 10 measured 1,000 and 10,000 event runs to completion; the 100,000 event attempt was bounded at 180 seconds and stopped during processing. Details and exact latency/throughput numbers are in [Stage 10 evaluation](../evaluation/stage-10-evaluation.md). The 10k run exposed repeated full edge scans in incident membership persistence. Those scans were replaced with endpoint indexes and cached component support; the completed 10k rerun and regression suite verified behavior and measured performance.

@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from uuid import uuid4
 
-from payflow_simulator.correlation import CorrelationConfig, CorrelationEngine, SQLiteCorrelationStore
+from payflow_simulator.correlation import CorrelationEngine, SQLiteCorrelationStore
 from payflow_simulator.processing.storage import SQLiteProcessingStore
 
 
@@ -56,6 +56,10 @@ class CorrelationTests(unittest.TestCase):
         trace_evidence = next(item for item in evidence if item["strategy"] == "trace")
         self.assertEqual(trace_evidence["evidence"]["supporting_attributes"]["trace_id"], "trace-1")
         self.assertEqual(trace_evidence["evidence"]["source_event_id"], min(a["event_id"], b["event_id"]))
+        member_history = [item["detail"] for item in self.store.incident_history(incident["incident_id"])
+                          if item["action"] == "event_added"]
+        self.assertEqual({item["event_id"] for item in member_history}, {a["event_id"], b["event_id"]})
+        self.assertTrue(all(len(item["supporting_relationships"]) == 1 for item in member_history))
 
     def test_shared_database_resource_links_across_services(self):
         a = self.processed(service="database-service", metadata={"database_id": "db-primary"})
@@ -63,7 +67,6 @@ class CorrelationTests(unittest.TestCase):
         self.insert(a, b)
         self.run_engine()
         incident = self.store.list_incidents()[0]
-        edge = self.store.incident_evidence(incident["incident_id"])[0]
         resource_evidence = next(item for item in self.store.incident_evidence(incident["incident_id"]) if item["strategy"] == "resource")
         self.assertEqual(resource_evidence["evidence"]["supporting_attributes"]["shared_resources"], ["database_id:db-primary"])
 

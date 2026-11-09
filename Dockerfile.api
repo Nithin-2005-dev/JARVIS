@@ -1,0 +1,21 @@
+FROM python:3.12.8-slim AS build
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /build
+COPY requirements-lock.txt ./
+RUN python -m pip wheel --no-cache-dir --wheel-dir /wheels -r requirements-lock.txt
+
+FROM python:3.12.8-slim AS runtime
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
+WORKDIR /app
+COPY --from=build /wheels /wheels
+COPY requirements-lock.txt ./
+RUN python -m pip install --no-index --find-links=/wheels -r requirements-lock.txt \
+    && rm -rf /wheels \
+    && groupadd --system jarvis && useradd --system --gid jarvis --home-dir /app jarvis \
+    && mkdir -p /data && chown -R jarvis:jarvis /app /data
+COPY --chown=jarvis:jarvis payflow_simulator ./payflow_simulator
+COPY --chown=jarvis:jarvis scripts ./scripts
+USER jarvis
+EXPOSE 8000
+HEALTHCHECK --interval=20s --timeout=3s --start-period=10s --retries=3 CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/ready',timeout=2)"
+CMD ["python", "-m", "uvicorn", "payflow_simulator.http_api.app:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]

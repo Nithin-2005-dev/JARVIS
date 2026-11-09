@@ -79,3 +79,14 @@
 - The SVG topology view is designed for the current small PayFlow graph. Large graphs would need layout and rendering virtualization.
 - Trend data is grouped from timestamps present in incident events. Missing or malformed timestamps are omitted, not imputed.
 - SQLite remains local and single-host; this API does not add concurrency coordination, authentication, or production deployment controls.
+
+## Stage 10 security and deployment limitations
+
+- SQLite is supported for development, deterministic demos, and modest single-instance deployment. It serializes writers; multi-instance/high-write availability is unsupported.
+- Schema versioning covers new authentication/audit tables. Earlier stores retain their idempotent local schema creation; a unified migration framework and downgrade path are not implemented.
+- Rate limits and operational metrics are per-process and reset at restart.
+- User provisioning is via CLI/admin routes; there is no password reset, MFA, SSO, or self-service registration.
+- Backup retention and scheduling are external operations. Restore refuses to overwrite an existing target.
+- This security review is not a penetration test or certification.
+- Stage 10 local checks completed 1k and 10k performance runs, the 4-test Playwright suite, frontend/API image builds, Compose health checks, and backup/restore. The 100k attempt was stopped during event processing at 180 seconds. These are local single-host checks, not production SLO or security certification.
+- Historical Stage 9 text says the demo lacked authentication; Stage 10 supersedes that current behavior. Deployed module settings require auth by default; only the explicit test factory can bypass auth.

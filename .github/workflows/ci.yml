@@ -1,0 +1,74 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+      - run: python -m pip install -r requirements-lock.txt -r requirements-dev.txt
+      - run: ruff check payflow_simulator/http_api tests/test_http_api.py tests/test_stage10.py
+      - run: python -m compileall -q payflow_simulator scripts tests
+      - run: python -m unittest discover -s tests -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run lint && npm run typecheck && npm test && npm run build
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Seed real demo database and temporary responder account
+        run: |
+          python -c 'import secrets; print("JARVIS_SECRET_KEY="+secrets.token_urlsafe(48)); print("E2E_PASSWORD="+secrets.token_urlsafe(20))' >> "$GITHUB_ENV"
+          python scripts/demo_pipeline.py --database data/ci-stage10.sqlite --events data/ci-stage10.jsonl --reset
+          python - <<'PY'
+          import os
+          from payflow_simulator.http_api.security import AuthStore
+          AuthStore("data/ci-stage10.sqlite").create_user("ci-responder", os.environ["E2E_PASSWORD"], "responder")
+          PY
+      - name: Start API
+        run: |
+          JARVIS_ENV=testing JARVIS_AUTH_ENABLED=true JARVIS_SECRET_KEY="$JARVIS_SECRET_KEY" \
+          JARVIS_DATABASE_URL="sqlite:///$PWD/data/ci-stage10.sqlite" \
+          JARVIS_FRONTEND_ORIGINS=http://127.0.0.1:3000 \
+          uvicorn payflow_simulator.http_api.app:app --host 127.0.0.1 --port 8000 > /tmp/jarvis-api.log 2>&1 &
+      - name: Start production frontend
+        run: |
+          mkdir -p .next/standalone/.next/static
+          cp -r .next/static/. .next/standalone/.next/static/
+          if [ -d public ]; then cp -r public .next/standalone/public; fi
+          PORT=3000 HOSTNAME=127.0.0.1 node .next/standalone/server.js > /tmp/jarvis-web.log 2>&1 &
+        working-directory: frontend
+      - name: Wait for application readiness
+        run: |
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:8000/api/v1/health/ready >/dev/null && curl -fsS http://127.0.0.1:3000 >/dev/null && exit 0; sleep 2; done
+          cat /tmp/jarvis-api.log /tmp/jarvis-web.log
+          exit 1
+      - run: npm run test:e2e
+        working-directory: frontend
+        env:
+          E2E_BASE_URL: http://127.0.0.1:3000
+          E2E_API_BASE_URL: http://127.0.0.1:8000
+          E2E_USERNAME: ci-responder
+          E2E_PASSWORD: ${{ env.E2E_PASSWORD }}
+      - name: Build containers
+        run: |
+          docker build -f Dockerfile.api -t jarvis-api:ci .
+          docker build -f Dockerfile.frontend --build-arg NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 -t jarvis-frontend:ci .

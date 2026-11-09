@@ -1,0 +1,5 @@
+# Backup and Recovery
+
+Use `python -m payflow_simulator.http_api.backup_cli backup --database PATH --output BACKUP_PATH` to create a SQLite online backup, integrity-check it, and write a SHA-256 sidecar. Use `verify --backup BACKUP_PATH` to verify checksum and SQLite integrity. Restore uses `restore --backup BACKUP_PATH --target NEW_PATH`; it refuses to overwrite an existing target. Test restoration only in a temporary/isolated path.
+
+A backup captures one consistent SQLite snapshot, including committed history visible at capture time. Store copies off-host and protect them as incident data. Suggested operational policy: daily backup plus a pre-release backup, retain according to organizational incident-data policy, and periodically restore-test. The repository does not schedule backups or enforce retention. Sidecar and backup should be copied together. Recovery to a live deployment is an operator-controlled maintenance action; stop writers and preserve the original database before switching paths.
