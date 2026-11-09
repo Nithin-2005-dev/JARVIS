@@ -1,0 +1,215 @@
+{
+  "duplicate_idempotency": {
+    "denominator": 1,
+    "numerator": 1,
+    "value": 1.0
+  },
+  "duplicate_rate_on_repeated_generation": {
+    "denominator": 1,
+    "numerator": 0,
+    "value": 0.0
+  },
+  "evaluation_type": "synthetic_rule_conformance_not_production_quality",
+  "evidence_traceability": {
+    "denominator": 13,
+    "numerator": 13,
+    "value": 1.0
+  },
+  "feedback_persistence": {
+    "denominator": 1,
+    "numerator": 1,
+    "value": 1.0
+  },
+  "high_risk_classification_and_prerequisites": {
+    "denominator": 1,
+    "numerator": 1,
+    "value": 1.0
+  },
+  "inappropriate_mitigation_suggestions": {
+    "denominator": 1,
+    "numerator": 0,
+    "value": 0.0
+  },
+  "investigation_before_mitigation_order": {
+    "denominator": 1,
+    "numerator": 1,
+    "value": 1.0
+  },
+  "lifecycle_transition_correctness": {
+    "denominator": 1,
+    "numerator": 1,
+    "value": 1.0
+  },
+  "limitations": [
+    "Fixtures exercise deterministic rule conformance, not responder utility or production incident quality.",
+    "Synthetic denominator is small and authored alongside the rules.",
+    "No calibrated confidence or success probability is measured."
+  ],
+  "priority_and_risk_gate_correctness": {
+    "denominator": 13,
+    "numerator": 13,
+    "value": 1.0
+  },
+  "scenario_count": 15,
+  "scenario_match_rate": {
+    "denominator": 15,
+    "numerator": 15,
+    "value": 1.0
+  },
+  "scenarios": [
+    {
+      "expected_rule": "db_pool_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "8557669184e0a94e9a57a361aeba9b83ca3874f74e4914340d8f5e4c9be8298e"
+      ],
+      "scenario": "database_pool_exhaustion"
+    },
+    {
+      "expected_rule": "auth_failure_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "91354f9276a55d362bed26bce0e5050c336d07213be06032f0103c5be14538e9"
+      ],
+      "scenario": "authentication_degradation"
+    },
+    {
+      "expected_rule": "notification_failure_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "718d92e5a58e9d2a419b4baf9b7431d2acee7f5ccde27ba122951bd1eaba9a4e"
+      ],
+      "scenario": "notification_queue_failure"
+    },
+    {
+      "expected_rule": "service_error_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "74e30905a61aa2430f380f182a945cd1663354f956de2e071f588d48a0224f48"
+      ],
+      "scenario": "payment_degradation"
+    },
+    {
+      "expected_rule": "rca_candidate_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "3de8c74de4ffc34e7d7b37ed842e94a036ca59e5b4c013001cc77d028e58a802",
+        "716220a8af9c795a0aaa68381d3b6d9f9939eb91b9e7a887690f9cffc07e4235",
+        "87da733a91c3c84d6f243101fa69da263e91f1a0e53bcaae68a71000100a7044",
+        "ae336f32cebb2f35a33a7832b7ea0aeeb8df20f1b1a4021c7177249ddc3f3703"
+      ],
+      "scenario": "competing_rca"
+    },
+    {
+      "expected_rule": "rca_candidate_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "d9d44d3ee3c62b8c0420bcb072119b36556c5992bb41918acfc0cace4b6040f4",
+        "9cc08d64a561b83858dac0e544dd28d0a3d8c1469f5cf33c622980c2c4400a4b"
+      ],
+      "scenario": "inconclusive_rca"
+    },
+    {
+      "expected_rule": "detector_disagreement_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "5b73fa1bf24fcd39422a2c60cba3c3c3eb0b984f228d5ff615eec60337ca0af4"
+      ],
+      "scenario": "detector_disagreement"
+    },
+    {
+      "expected_rule": "potential_blast_radius_check",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "f45f20cd714198f0f376f877644430fe3ce11fb03a852dffc653555a113f7bcd",
+        "312647236fc119cb332c524f032d291556b7c4266d066d027a52dfd9e24b6b50"
+      ],
+      "scenario": "potential_blast_radius"
+    },
+    {
+      "expected_rule": "",
+      "matched": true,
+      "outcome": "insufficient_context",
+      "recommendation_ids": [],
+      "scenario": "missing_evidence"
+    },
+    {
+      "expected_rule": "recurrence_monitoring",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "5aa580fe070bd442af66a6a78da743c08b0babd539e2b1d38c846bea765c0c82",
+        "df3a187b50b9bd903b69d2ea07e7c623de991057964dfb4cffbe0af776dc364e"
+      ],
+      "scenario": "service_without_incident_recurring_anomaly"
+    },
+    {
+      "expected_rule": "db_pool_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "6bc2dd89a0cd802dd7842bf10583c31144a1309e7356affcb0fc358224a71aec"
+      ],
+      "scenario": "duplicate_generation"
+    },
+    {
+      "expected_rule": "pool_admission_control",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "61e1a3b9d9e10b8b5c6703fa7439b56e36199a5c7017c35772cdbb37078bd551",
+        "ca9cfc830e1dc00784a8d235b495d7a0f9ea638ecc87082b2fd6412d0d7fe461"
+      ],
+      "scenario": "high_risk_prerequisite_gate"
+    },
+    {
+      "expected_rule": "db_pool_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "1d26abfc941638224ff270710e33813838d2a697dea925f5d1dfa9d0c39fce78"
+      ],
+      "scenario": "high_risk_missing_prerequisites"
+    },
+    {
+      "expected_rule": "db_pool_diagnostics",
+      "matched": true,
+      "outcome": "generated",
+      "recommendation_ids": [
+        "16fc02211abd442e145576f548b1f96109e1e9002a5e39fe6e36b269fb379fb0",
+        "e1579b2a55be162f93d68897757e66b86c0c6796499c711a12e7dc5629d30fe5"
+      ],
+      "scenario": "contradictory_evidence"
+    },
+    {
+      "expected_rule": "",
+      "matched": true,
+      "outcome": "no_applicable_rule",
+      "recommendation_ids": [],
+      "scenario": "no_applicable_rule"
+    }
+  ],
+  "uncertainty_preservation": {
+    "denominator": 4,
+    "numerator": 4,
+    "value": 1.0
+  },
+  "unsupported_recommendations": {
+    "denominator": 13,
+    "numerator": 0,
+    "value": 0.0
+  },
+  "verification_completeness": {
+    "denominator": 13,
+    "numerator": 13,
+    "value": 1.0
+  }
+}

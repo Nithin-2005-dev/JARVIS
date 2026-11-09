@@ -62,3 +62,11 @@
 - Unknown endpoints and insufficiently verified edges remain visible. They may cause incomplete impact estimates until registry definitions are reviewed.
 - Incident integration reads the latest Stage 5 snapshot and does not rerun RCA or choose a winner among competing/inconclusive hypotheses.
 - SQLite graph/history records have no retention policy and remain a local single-host store.
+# Stage 8 recommendation limitations
+
+- The default rules read the latest available Stage 7 run, latest RCA snapshot for an incident, and persisted Stage 6 blast-radius records. Missing optional stage tables produce no context from that source; they are not treated as negative evidence.
+- The engine cannot query live telemetry. Historical pool metrics must be independently checked before the guarded admission-control proposal is acted on.
+- Current service criticality values are PayFlow-specific defaults used only for heuristic ranking.
+- Rule descriptors are versioned, but conditions are implemented in Python branches. New rules need code and tests as well as a descriptor.
+- The engine does not provide generic mitigation/recovery suggestions for every service. If the evidence does not satisfy a rule, it favors investigation or returns no applicable rule.
+- SQLite generation snapshots are immutable, but lifecycle state is a separate mutable current record with append-only audit rows.

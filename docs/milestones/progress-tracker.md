@@ -117,3 +117,13 @@ End-to-end ingestion plus processing benchmarked 5,000 synthetic records in a te
 - `python3 -m unittest discover -s tests -v` — 35 tests passed, 0 failures/errors (2.743 seconds), including Stage 1 and Stage 2 regression coverage.
 - End-to-end CLI: Stage 2 ingested the sample dataset (63 accepted); Stage 3 processed 63 with 0 failures; a second normal processing CLI run received 0 and processed 0.
 - Stage 3 CLI help and `git diff --check` completed successfully.
+# Stage 8 — Intelligent Recommendations Engine
+
+- [x] Inspect and preserve Stage 1–7 SQLite records and interfaces.
+- [x] Add typed recommendation/configuration/feedback models and explainable rules.
+- [x] Add evidence-gated incident and service-level generation with inconclusive outcomes.
+- [x] Add RCA competing-hypothesis, Stage 7 detector disagreement, and Stage 6 potential-impact handling.
+- [x] Add deterministic SQLite runs, snapshots, lifecycle audit, and feedback persistence.
+- [x] Add ranking/risk gates, CLI, synthetic scenarios, tests, and documentation.
+- [x] Run and record final full Stage 1–8 regression, compile/whitespace checks, and end-to-end verification (104 tests passed; 13 events accepted and processed).
+- [ ] Stage 9 remains not authorized/not started.

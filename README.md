@@ -1,4 +1,4 @@
-# J.A.R.V.I.S. — Stages 1–7: PayFlow Event Intelligence Prototype
+# J.A.R.V.I.S. — Stages 1–8: PayFlow Event Intelligence Prototype
 
 J.A.R.V.I.S. currently includes the Stage 1 deterministic PayFlow simulator and the Stage 2 multi-source event ingestion engine. Python 3.10+ is required; no third-party dependencies are used.
 
@@ -28,13 +28,16 @@ Use `python3 -m payflow_simulator.cli --help` for options. Scenarios: `all`, `no
 - `payflow_simulator/dependency_graph/`: service/dependency registry, graph validation/versioning, cycle-safe blast-radius analysis, Stage 4/5 integration, and evaluation.
 - `payflow_simulator/dependency_cli.py`: graph, validation, blast-radius, incident, and history CLI.
 - `payflow_simulator/intelligence/`: feature extraction, rolling baselines, statistical and Isolation Forest detectors, temporal/pattern/cross-service analysis, SQLite persistence, and evaluation.
-- `tests/`: Stage 1–7 unit and integration tests.
+- `payflow_simulator/recommendations/`: evidence-gated responder recommendations, risk-aware ranking, lifecycle/feedback persistence, CLI, and synthetic evaluation.
+- `tests/`: Stage 1–8 unit and integration tests.
 - `data/sample_events.jsonl`: generated sample.
 - `docs/`: architecture, engineering, specification, milestone and troubleshooting notes.
 
 The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events. Processing enriches and classifies records, handles event time, detects patterns, and writes recoverable output to SQLite. Stage 4 correlates processed records with explainable evidence. Stage 5 ranks competing root-cause hypotheses and permits inconclusive results. Stage 6 versions a directed service dependency graph and calculates potential structural blast radius with paths, criticality, and heuristic impact scores. It integrates with incidents and RCA snapshots without treating candidates as confirmed causes. See the [dependency graph architecture](docs/architecture/service-dependency-architecture.md), [blast-radius architecture](docs/architecture/blast-radius-architecture.md), [Stage 6 report](docs/milestones/milestone-06.md), and [known limitations](docs/troubleshooting/known-issues.md).
 
 Stage 7 builds service-window features and strictly prior baselines, keeps statistical and Isolation Forest outputs separate, discovers recurring signatures, and adds dependency context. Anomaly signals do not create incidents or root-cause claims. See [Stage 7 architecture](docs/architecture/advanced-intelligence-architecture.md) and the [known limitations](docs/troubleshooting/known-issues.md).
+
+Stage 8 reads Stages 3–7 as immutable evidence and generates advisory, evidence-linked investigation, diagnostic, monitoring, and narrowly gated mitigation recommendations. Competing/inconclusive RCA and detector disagreement remain explicit. Recommendations are never executed. Run `python3 -m payflow_simulator.recommendations.cli --database data/events.sqlite generate --incident-id INCIDENT_ID` or replace the target with `--service payment-service`. See the [recommendation API](docs/api/recommendations-api.md), [engine architecture](docs/architecture/recommendation-engine-architecture.md), and [Stage 8 evaluation](docs/evaluation/stage-08-evaluation.md).
 
 ## Dependency graph and blast radius
 
