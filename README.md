@@ -7,6 +7,7 @@ J.A.R.V.I.S. currently includes the Stage 1 deterministic PayFlow simulator and 
 ```bash
 python3 -m payflow_simulator.cli --scenario all --seed 42 --payments 3 --output data/sample_events.jsonl
 python3 -m payflow_simulator.ingest_cli --source json --input data/sample_events.jsonl
+python3 -m payflow_simulator.process_cli --database data/events.sqlite
 python3 -m unittest discover -s tests -v
 ```
 
@@ -19,8 +20,10 @@ Use `python3 -m payflow_simulator.cli --help` for options. Scenarios: `all`, `no
 - `payflow_simulator/cli.py`: CLI.
 - `payflow_simulator/ingestion/`: source adapters, canonicalization, batch engine, quarantine, and SQLite storage.
 - `payflow_simulator/ingest_cli.py`: ingestion CLI.
+- `payflow_simulator/processing/`: enrichment, classification, temporal windows, pattern detection, state, and output storage.
+- `payflow_simulator/process_cli.py`: processing runner.
 - `tests/`: Stage 1 unit tests and Stage 2 unit/integration tests.
 - `data/sample_events.jsonl`: generated sample.
 - `docs/`: architecture, engineering, specification, milestone and troubleshooting notes.
 
-The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events, normalizes records, stores unique IDs in SQLite, and quarantines invalid input. See [ingestion architecture](docs/architecture/event-ingestion-architecture.md), [Stage 2 report](docs/milestones/milestone-02.md), and [known limitations](docs/troubleshooting/known-issues.md).
+The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events. The processing command enriches and classifies ingested rows, annotates event-time windows, detects repeat/frequency patterns, and writes recoverable output to the same SQLite database. See [processing architecture](docs/architecture/event-processing-architecture.md), [Stage 3 report](docs/milestones/milestone-03.md), and [known limitations](docs/troubleshooting/known-issues.md).

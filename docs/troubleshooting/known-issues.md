@@ -13,3 +13,12 @@
 - Quarantine is append-only and has no built-in rotation or retention enforcement.
 - Repeated event IDs keep the first accepted payload without comparing later payload differences.
 - REST CLI does not configure auth headers; Python adapter callers can supply headers.
+- Processing classification is only as complete as its registry and configured rules; an unmatched known event is labeled `uncategorized`.
+- The event-time watermark is global and serial in the local processor. Out-of-order events are annotated and retained in their original windows, but not buffered or reordered; multiple workers are not a supported ordering guarantee.
+- Pattern signatures require matching event type, severity, and normalized message. Small wording changes split counts; event volume uses fixed absolute thresholds, not learned baselines.
+- Pattern evidence lists are capped at 20 IDs while pattern counts remain total counts.
+- Processing claims use a stale timeout without lease renewal. Keep one local processor; a long-running attempt could be reclaimed by another process after the timeout.
+- Failed rows are retained and retried on later runs; there is no automatic retry limit or purge/dead-letter policy.
+- Processing history and pattern observations have no automatic retention policy.
+- SQLite finalizes each event atomically; local write/commit latency dominates the 5,000-event benchmark. This milestone establishes correctness and recoverability, not a high-throughput target.
+- The additive lifecycle/security event types are available to producers but the Stage 1 simulator does not emit them.

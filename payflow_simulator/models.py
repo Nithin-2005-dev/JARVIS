@@ -31,6 +31,11 @@ class EventType(str, Enum):
     NOTIFICATION_SENT = "notification_sent"
     REQUEST_COMPLETED = "request_completed"
     REQUEST_FAILED = "request_failed"
+    SERVICE_STARTED = "service_started"
+    SERVICE_STOPPED = "service_stopped"
+    SERVICE_RESTARTED = "service_restarted"
+    HEALTH_CHECK = "health_check"
+    SECURITY_ALERT = "security_alert"
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,7 +61,7 @@ class Event:
 
 
 def validate_event(data: Mapping[str, Any]) -> None:
-    """Raise ValueError if a mapping does not satisfy the v0.1 event contract."""
+    """Raise ValueError if a mapping does not satisfy the canonical event contract."""
     required = {
         "event_id", "timestamp", "service", "event_type", "severity",
         "message", "source", "trace_id", "metadata",

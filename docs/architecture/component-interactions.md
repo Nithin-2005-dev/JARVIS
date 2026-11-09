@@ -21,3 +21,5 @@ sequenceDiagram
 Pool exhaustion yields no query, notification, or success event. Provider timeout preserves the approved payment and queues notification; v0.1 emits no later retry attempt.
 
 Ingestion is a separate downstream flow: adapters turn input into `SourceRecord` values, the engine validates and normalizes them, then writes accepted events to SQLite or invalid records to quarantine. It does not change event generation.
+
+The processing engine claims ingested rows, enriches from its registry, applies matching classification rules, adds event-time/window annotations, and queries persisted window observations for repetition patterns. A final transaction writes the processed payload, evidence, watermark, processing history, and terminal state. A failure leaves the source row for a later retry.

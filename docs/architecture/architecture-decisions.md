@@ -31,3 +31,19 @@ Kafka/Kubernetes, a web framework, and live timestamps were deferred because the
 ## ADR-007: Append-only quarantine JSONL
 
 **Decision:** Preserve rejected raw payloads with reason and source locator in JSONL. **Reason:** Invalid inputs remain inspectable without blocking valid records in the same batch. **Trade-off:** Operators must manage quarantine retention and file growth.
+
+## ADR-008: Separate source and processed payloads
+
+**Decision:** Keep canonical ingested rows unchanged and store enriched output in `processed_events`. **Reason:** Processing rules and registries evolve; original data must remain auditable and replayable. **Trade-off:** The same event ID has a source representation and a derived representation.
+
+## ADR-009: Durable local processing state
+
+**Decision:** Store claims, attempts, status, stage history, output, and pattern observations in SQLite. **Reason:** A crash or stage failure must not discard ingested events, and safe replay needs durable state. **Trade-off:** SQLite is a local single-processor implementation; the stale claim timeout is not a distributed lease protocol.
+
+## ADR-010: Fixed event-time windows and count patterns
+
+**Decision:** Use epoch-aligned tumbling windows, a persisted maximum event time, and exact normalized signatures with configured thresholds. **Reason:** This makes event ordering and repetition behavior explainable and testable without ML. **Trade-off:** Threshold signals do not adapt to seasonality and do not infer causal relationships.
+
+## ADR-011: Extend event-type vocabulary additively
+
+**Decision:** Add lifecycle and security event types while retaining Stage 1 values and event fields. **Reason:** Those categories need representative source events to be classified through the validated pipeline. **Trade-off:** External producers still must use an explicitly supported type or extend the contract deliberately.
