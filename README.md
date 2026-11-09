@@ -1,6 +1,6 @@
-# J.A.R.V.I.S. — Stages 1–8: PayFlow Event Intelligence Prototype
+# J.A.R.V.I.S. — Stages 1–9: PayFlow Incident Intelligence Command Center
 
-J.A.R.V.I.S. currently includes the Stage 1 deterministic PayFlow simulator and the Stage 2 multi-source event ingestion engine. Python 3.10+ is required; no third-party dependencies are used.
+J.A.R.V.I.S. spans a deterministic PayFlow simulator, multi-source ingestion, event processing, correlation, RCA, dependency analysis, anomaly intelligence, recommendations, and a web Command Center. Python 3.10+ is required for the simulator and event engines. The Stage 9 API requires the packages in `requirements-stage9.txt`; the frontend requires Node.js and npm.
 
 ## Quick start
 
@@ -38,6 +38,30 @@ The five payment services remain represented as simulator event producers. Inges
 Stage 7 builds service-window features and strictly prior baselines, keeps statistical and Isolation Forest outputs separate, discovers recurring signatures, and adds dependency context. Anomaly signals do not create incidents or root-cause claims. See [Stage 7 architecture](docs/architecture/advanced-intelligence-architecture.md) and the [known limitations](docs/troubleshooting/known-issues.md).
 
 Stage 8 reads Stages 3–7 as immutable evidence and generates advisory, evidence-linked investigation, diagnostic, monitoring, and narrowly gated mitigation recommendations. Competing/inconclusive RCA and detector disagreement remain explicit. Recommendations are never executed. Run `python3 -m payflow_simulator.recommendations.cli --database data/events.sqlite generate --incident-id INCIDENT_ID` or replace the target with `--service payment-service`. See the [recommendation API](docs/api/recommendations-api.md), [engine architecture](docs/architecture/recommendation-engine-architecture.md), and [Stage 8 evaluation](docs/evaluation/stage-08-evaluation.md).
+
+Stage 9 adds the web Command Center and a thin FastAPI adapter over the existing Stage 3–8 stores. It does not move analysis into React or fabricate service health. Review the [Command Center architecture](docs/architecture/command-center-architecture.md), [HTTP API reference](docs/api/http-api-reference.md), and [known limitations](docs/troubleshooting/known-issues.md).
+
+## Stage 9 demo
+
+Install the API dependencies and build a deterministic database with the established simulator and pipeline:
+
+```bash
+python3 -m pip install -r requirements-stage9.txt
+python3 scripts/demo_pipeline.py --database data/demo.sqlite --events data/demo_events.jsonl --reset
+JARVIS_DATABASE=data/demo.sqlite python3 -m uvicorn payflow_simulator.http_api.app:app --host 127.0.0.1 --port 8000
+```
+
+In another terminal:
+
+```bash
+cd frontend
+npm install
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000 npm run dev
+```
+
+Open `http://localhost:3000`; API documentation is at `http://localhost:8000/api/docs`. The local API has no authentication and should remain bound to loopback. See [local setup](docs/setup/local-development.md) and [demo setup](docs/setup/demo-environment.md).
+
+Frontend checks: `cd frontend && npm test && npm run typecheck && npm run lint && npm run build`. Backend suite: `python3 -m unittest discover -s tests -v` (with `requirements-stage9.txt` installed for API tests).
 
 ## Dependency graph and blast radius
 

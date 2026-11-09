@@ -126,4 +126,16 @@ End-to-end ingestion plus processing benchmarked 5,000 synthetic records in a te
 - [x] Add deterministic SQLite runs, snapshots, lifecycle audit, and feedback persistence.
 - [x] Add ranking/risk gates, CLI, synthetic scenarios, tests, and documentation.
 - [x] Run and record final full Stage 1–8 regression, compile/whitespace checks, and end-to-end verification (104 tests passed; 13 events accepted and processed).
-- [ ] Stage 9 remains not authorized/not started.
+- [x] Stage 9 — Command Center implemented and verified; details below.
+
+## Stage 9 — Command Center
+
+- [x] Inspect existing Stage 3–8 stores, APIs, schemas, and documentation.
+- [x] Add a FastAPI adapter that delegates analysis and recommendation lifecycle rules to existing stores.
+- [x] Add Next.js routes for overview, incidents, service explorer, intelligence, and recommendations.
+- [x] Add event-time timeline/volume display, evidence sections, uncertainty labels, graph interactions, and explicit unavailable states.
+- [x] Add deterministic demo pipeline and setup/API/frontend documentation.
+- [x] Verify full Python suite (109 passed), frontend suite (12 passed), TypeScript, lint, production build, demo replay, API lifecycle, compile, and whitespace checks.
+- [ ] Stage 10 remains not authorized/not started.
+
+Stage 9 demo run: 63 events generated, 63 processed, 9 incidents, 11 intelligence findings, and 40 recommendations available. Repeated no-reset run processed 0 additional events and retained the same incident/finding totals. See `milestone-09.md` for API timings and test detail.

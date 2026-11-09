@@ -4,3 +4,7 @@ data/*.sqlite
 data/*.sqlite-shm
 data/*.sqlite-wal
 data/quarantine.jsonl
+frontend/node_modules/
+frontend/.next/
+frontend/next-env.d.ts
+frontend/tsconfig.tsbuildinfo

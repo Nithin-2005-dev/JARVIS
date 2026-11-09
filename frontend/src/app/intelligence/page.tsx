@@ -1,0 +1,13 @@
+'use client';
+import {useState} from 'react';
+import {api} from '@/lib/api';
+import {PageTitle,Panel,State,useApi,Table,fmtDate} from '@/components/ui';
+import type {AnyRecord} from '@/lib/types';
+
+export default function Intelligence(){
+ const[type,setType]=useState(''),[service,setService]=useState(''),[detector,setDetector]=useState(''),[from,setFrom]=useState(''),[to,setTo]=useState('');
+ const{data,error,loading}=useApi(api.findings,[]);const all=data?.items||[];
+ const kinds=[...new Set(all.map((x:AnyRecord)=>x.finding_type).filter(Boolean))] as string[],services=[...new Set(all.flatMap((x:AnyRecord)=>x.affected_service_ids||[]))] as string[],detectors=[...new Set(all.map((x:AnyRecord)=>x.detector).filter(Boolean))] as string[];
+ const rows=all.filter((x:AnyRecord)=>(!type||x.finding_type===type)&&(!service||(x.affected_service_ids||[]).includes(service))&&(!detector||x.detector===detector)&&(!from||String(x.window_start||'')>=from)&&(!to||String(x.window_end||'')<=to));
+ return <><PageTitle eyebrow="Advanced intelligence" title="Findings" description="Detector outputs and recurring patterns are evidence for investigation, not incident or causal conclusions."/><div className="filter-row"><select aria-label="Finding type" value={type} onChange={e=>setType(e.target.value)}><option value="">All finding types</option>{kinds.map(k=><option key={k}>{k}</option>)}</select><select aria-label="Filter finding service" value={service} onChange={e=>setService(e.target.value)}><option value="">All services</option>{services.map(s=><option key={s}>{s}</option>)}</select><select aria-label="Filter detector" value={detector} onChange={e=>setDetector(e.target.value)}><option value="">All detectors</option>{detectors.map(x=><option key={x}>{x}</option>)}</select><label className="muted small">From <input aria-label="Finding start time" type="date" value={from} onChange={e=>setFrom(e.target.value)}/></label><label className="muted small">To <input aria-label="Finding end time" type="date" value={to} onChange={e=>setTo(e.target.value)}/></label></div>{loading?<State kind="loading">Loading findings…</State>:error?<State kind="error">{error}</State>:<Panel title={`${rows.length} findings`}><Table columns={['Finding','Services','Detector','Observed feature','Score interpretation','Window','Data status']} rows={rows.map((f:AnyRecord)=>[<b key={f.finding_id}>{f.finding_type}</b>,f.affected_service_ids?.join(', ')||'—',f.detector||'—',f.observed_facts?.map((x:AnyRecord)=>x.feature||x.description).join(', ')||'—',f.score_interpretation||'Heuristic detector output',`${fmtDate(f.window_start)} – ${fmtDate(f.window_end)}`,f.uncertainty_status||'available'])} empty="No stored intelligence findings."/></Panel>}</>
+}

@@ -70,3 +70,12 @@
 - Rule descriptors are versioned, but conditions are implemented in Python branches. New rules need code and tests as well as a descriptor.
 - The engine does not provide generic mitigation/recovery suggestions for every service. If the evidence does not satisfy a rule, it favors investigation or returns no applicable rule.
 - SQLite generation snapshots are immutable, but lifecycle state is a separate mutable current record with append-only audit rows.
+
+# Stage 9 Command Center limitations
+
+- The HTTP adapter is a local demo API without authentication. It defaults to CORS origin `http://localhost:3000`; bind it to loopback and do not expose it to untrusted networks.
+- Service health remains unavailable because the existing backend stores do not define live health records. The UI labels this explicitly.
+- Dashboard data is request/response over HTTP, not a live stream. It does not poll automatically.
+- The SVG topology view is designed for the current small PayFlow graph. Large graphs would need layout and rendering virtualization.
+- Trend data is grouped from timestamps present in incident events. Missing or malformed timestamps are omitted, not imputed.
+- SQLite remains local and single-host; this API does not add concurrency coordination, authentication, or production deployment controls.

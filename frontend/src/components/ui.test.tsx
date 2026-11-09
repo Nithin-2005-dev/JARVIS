@@ -1,0 +1,8 @@
+import {describe,it,expect} from 'vitest';import {fireEvent,render,screen} from '@testing-library/react';import {Badge,State} from './ui';import {DependencyGraph} from './graph';
+describe('Command Center shared components',()=>{
+ it('renders a clear empty state',()=>{render(<State>No incident records</State>);expect(screen.getByText('No incident records')).toBeInTheDocument()});
+ it('renders visible loading and API error states',()=>{const{rerender}=render(<State kind="loading">Loading incidents</State>);expect(screen.getByText('Loading incidents')).toBeInTheDocument();rerender(<State kind="error">API unavailable</State>);expect(screen.getByText('API unavailable')).toBeInTheDocument()});
+ it('labels recommendation statuses as badges',()=>{render(<Badge>proposed</Badge>);expect(screen.getByText('proposed')).toBeInTheDocument()});
+ it('renders dependency direction and selectable services',()=>{render(<DependencyGraph services={[{service_id:'app',service_name:'App'},{service_id:'db',service_name:'Database'}]} dependencies={[{source_service_id:'app',target_service_id:'db',dependency_type:'database'}]}/>);expect(screen.getByLabelText(/A points to B when A depends on B/)).toBeInTheDocument();expect(screen.getByText(/A → B means A depends on B/)).toBeInTheDocument()});
+ it('supports zoom controls and selecting a service node',()=>{render(<DependencyGraph services={[{service_id:'app',service_name:'App',criticality:'high'}]} dependencies={[]}/>);fireEvent.click(screen.getByLabelText('Zoom in'));fireEvent.click(screen.getByRole('button',{name:'App'}));expect(screen.getByText(/high criticality/)).toBeInTheDocument();fireEvent.click(screen.getByLabelText('Reset graph view'))});
+});

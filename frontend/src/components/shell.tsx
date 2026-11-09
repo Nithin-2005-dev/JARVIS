@@ -1,0 +1,6 @@
+'use client';
+import Link from 'next/link';
+import {usePathname} from 'next/navigation';
+import {Activity, Boxes, Lightbulb, Network, Radio, ShieldAlert} from 'lucide-react';
+const links=[['/','Command Center',Activity],['/incidents','Incidents',ShieldAlert],['/services','Services',Network],['/intelligence','Intelligence',Radio],['/recommendations','Recommendations',Lightbulb]] as const;
+export function Shell({children}:{children:React.ReactNode}){const path=usePathname();return <div className="min-h-screen bg-ink text-slate-100"><aside className="sidebar"><Link href="/" className="brand"><span className="brand-mark">J</span><span>J.A.R.V.I.S.<small>INCIDENT COMMAND</small></span></Link><nav>{links.map(([href,label,Icon])=><Link key={href} href={href} className={`nav-link ${path===href||href!=='/'&&path.startsWith(href)?'selected':''}`}><Icon size={17}/>{label}</Link>)}</nav><div className="sidebar-foot"><span className="status-dot"/>Local analysis workspace</div></aside><main className="main-content"><header className="topbar"><div className="crumb">Operations <span>/</span> {links.find(([href])=>path===href||href!=='/'&&path.startsWith(href))?.[1]||'Investigation'}</div><div className="api-state">Local API · data fetched on request</div></header><div className="page-wrap">{children}</div></main></div>}
