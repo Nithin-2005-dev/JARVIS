@@ -1,0 +1,260 @@
+{
+  "anomalous_windows": [
+    {
+      "scenarios": [
+        "abnormal_event_frequency"
+      ],
+      "service_id": "api-gateway",
+      "window_index": 27
+    },
+    {
+      "scenarios": [
+        "cross_service_anomalies"
+      ],
+      "service_id": "api-gateway",
+      "window_index": 36
+    },
+    {
+      "scenarios": [
+        "sudden_error_rate_increase"
+      ],
+      "service_id": "authentication-service",
+      "window_index": 25
+    },
+    {
+      "scenarios": [
+        "sudden_error_rate_increase"
+      ],
+      "service_id": "authentication-service",
+      "window_index": 26
+    },
+    {
+      "scenarios": [
+        "sudden_error_rate_increase"
+      ],
+      "service_id": "authentication-service",
+      "window_index": 27
+    },
+    {
+      "scenarios": [
+        "sudden_error_rate_increase"
+      ],
+      "service_id": "authentication-service",
+      "window_index": 28
+    },
+    {
+      "scenarios": [
+        "sudden_error_rate_increase"
+      ],
+      "service_id": "authentication-service",
+      "window_index": 29
+    },
+    {
+      "scenarios": [
+        "recurring_incident_fingerprints",
+        "repeated_error_bursts"
+      ],
+      "service_id": "database-service",
+      "window_index": 22
+    },
+    {
+      "scenarios": [
+        "recurring_incident_fingerprints",
+        "repeated_error_bursts"
+      ],
+      "service_id": "database-service",
+      "window_index": 30
+    },
+    {
+      "scenarios": [
+        "cross_service_anomalies"
+      ],
+      "service_id": "database-service",
+      "window_index": 34
+    },
+    {
+      "scenarios": [
+        "recurring_incident_fingerprints",
+        "repeated_error_bursts"
+      ],
+      "service_id": "database-service",
+      "window_index": 36
+    },
+    {
+      "scenarios": [
+        "dependency_degradation_precedes_dependents"
+      ],
+      "service_id": "database-service",
+      "window_index": 37
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 25
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 26
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 27
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 28
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 29
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 30
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 31
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 32
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 33
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 34
+    },
+    {
+      "scenarios": [
+        "cross_service_anomalies",
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 35
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 36
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 37
+    },
+    {
+      "scenarios": [
+        "dependency_degradation_precedes_dependents",
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 38
+    },
+    {
+      "scenarios": [
+        "gradual_service_degradation"
+      ],
+      "service_id": "payment-service",
+      "window_index": 39
+    }
+  ],
+  "dataset_event_count": 2432,
+  "evaluation_window_indices": [
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+  ],
+  "known_recurring_signature": "5e587512817e2f0a145a5016f6206eeba1ccdf90f6397dd7fb927de412fa471f",
+  "notes": "Hand-authored ground truth; window index is fixed event-time order. This is a mechanism check, not a representative production distribution.",
+  "scenario_denominator": 12,
+  "scenario_names": [
+    "normal_stable_traffic",
+    "sudden_error_rate_increase",
+    "gradual_service_degradation",
+    "repeated_error_bursts",
+    "abnormal_event_frequency",
+    "cross_service_anomalies",
+    "dependency_degradation_precedes_dependents",
+    "cold_start_insufficient_history",
+    "missing_and_invalid_timestamps",
+    "detector_disagreement",
+    "benign_normal_variation",
+    "recurring_incident_fingerprints"
+  ],
+  "training_window_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ]
+}

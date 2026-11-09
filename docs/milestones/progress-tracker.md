@@ -70,6 +70,21 @@ Six deterministic scenarios with 15 observations: 5 labeled initiator cases and 
 
 Fourteen focused tests and 76 total regression tests pass. The nine-scenario fixture passed all direct/indirect set, path, uncertainty, duplicate, and cycle checks. A seed-42 temporary end-to-end run processed 63 events, formed nine incidents, generated nine RCA snapshots, and completed incident blast-radius analysis with deterministic repeat IDs. Exact commands and measured timings are in `milestone-06.md` and `data/evaluation/stage6_dependency_metrics.json`.
 
+## Stage 7
+
+- [x] Inspect Stage 1–6 source, SQLite patterns, schemas, CLIs, test layout, and documentation.
+- [x] Add event-time feature extraction and provenance for volume, error/severity/type distributions, intervals, explicit latency, signatures, and metadata resource IDs.
+- [x] Add strictly prior versioned rolling baselines with cold-start outcomes and no target/future leakage.
+- [x] Add separate rolling statistical and deterministic Isolation Forest detectors with raw score semantics and retained model artifacts.
+- [x] Add event-time temporal summaries, late/invalid time handling, exact/approximate patterns, incident structures, and bounded Stage 6 dependency-context joins.
+- [x] Add transactional SQLite history, idempotent runs, CLI/Python APIs, synthetic labeled artifacts, and Stage 4/5/6 references.
+- [x] Update README, architecture, API, evaluation, testing, known issues, ADRs, milestone report, and configuration docs.
+- [x] Run final full-suite, end-to-end, evaluation, reproducibility, compile, diff, and Git status checks; record actual outputs in milestone 07.
+
+### Stage 7 verification summary
+
+The complete Stage 1–7 suite passed 92 tests. The 12-scenario time-ordered fixture reported statistical precision/recall 18/18 and 18/27, and Isolation Forest precision/recall 23/62 and 23/27; forest false-positive rate was 39/94. Pattern precision was 1/9. Baselines and inference reproduced; no future-data leakage was found. A seed-42 temporary pipeline processed all 63 events and kept every explicit finding event reference traceable. Detailed results are in `milestone-07.md` and `data/evaluation/stage7_intelligence_metrics.json`.
+
 ### Stage 4 synthetic evaluation and performance
 
 `python3 -m payflow_simulator.correlation.evaluate --output-dir data/evaluation` on the default 100-event fixture: 20 labeled three-event incidents and 20 unrelated simultaneous pairs. Pairwise co-membership: 60 ground-truth related pairs, 60 predicted, 60 true positives, 0 false positives, 0 false negatives; precision 1.000, recall 1.000. This fixture is intentionally controlled and is not a production accuracy estimate. One final local measurement reported 80 candidate pairs, 0.1012 s candidate generation, 0.0969 s relationship evaluation, 0.3138 s total run, 319 events/s, and 586,997 traced peak bytes. Timings vary by host.

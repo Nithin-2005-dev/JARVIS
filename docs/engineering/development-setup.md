@@ -20,3 +20,7 @@ Processing reads ingested rows and writes `processed_events` and state/history t
 # Stage 4 commands
 
 Correlation uses the same Python 3.10+ standard-library setup and existing Stage 2/3 SQLite database. After processing events, use `python3 -m payflow_simulator.correlation_cli --database data/events.sqlite run`. Inspect commands with `python3 -m payflow_simulator.correlation_cli --help`. Copy `data/correlation-config.example.json` to a project-specific config when adjusting thresholds or service dependencies. Generate evaluation fixtures with `python3 -m payflow_simulator.correlation.evaluate --output-dir data/evaluation`.
+
+# Stage 7 intelligence
+
+No third-party package installation is required. After Stage 3 processing, run `python3 -m payflow_simulator.intelligence.intelligence_cli --database data/events.sqlite analyze`. Component commands are `features`, `baseline`, `detect`, `temporal`, `patterns`, and `cross-service`; use `history --run-id RUN_ID` to retrieve a snapshot. `--config FILE.json` accepts explicit `IntelligenceConfig` fields; `data/intelligence-config.example.json` lists the defaults. Reproduce synthetic artifacts with `python3 -m payflow_simulator.intelligence.evaluation --output-dir data/evaluation`.

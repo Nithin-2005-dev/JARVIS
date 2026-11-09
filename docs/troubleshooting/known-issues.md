@@ -28,6 +28,18 @@
 - Trace incompleteness is only an observation: without expected span/service manifests, a single observed service cannot prove a missing span.
 - Similar-message matching is limited to nearby failure candidates or Stage 3 pattern evidence, so distant repeat failures may not link.
 - Dense trace/resource/time buckets can exceed `max_candidates`; the run fails before replacing persisted correlation relationships.
+
+# Stage 7 intelligence limits
+
+- The Isolation Forest is a small dependency-free seeded implementation. It is tested for repeatability, but its synthetic precision is low; do not use it for alerting without representative labeled evaluation.
+- The statistical 3.0 and forest 0.62 thresholds, minimum histories, time windows, lookback, support, and similarity values are configurable engineering choices, not calibrated probabilities.
+- Baselines assume recent service windows are comparable. Time-of-day/day-of-week seasonality is not implemented.
+- The input contract has no explicit service-coverage interval. Empty intervals are not synthesized, so silent services and event-volume drops during no-event periods cannot be reliably detected.
+- Batch reruns use event time and create a new immutable snapshot when inputs change; there is no streaming watermark, incremental late-event state, or online retraining.
+- Exact signatures recur in normal and failure traffic. The synthetic pattern precision is low; findings are investigation hints, not incident identities or causal evidence.
+- Cross-service outputs depend on the Stage 6 configured topology, can be affected by stale/missing edges, and are capped at 5,000 candidate pairs and 500 emitted relationships by default; cap/truncation indicators are returned.
+- Per-window Isolation Forest artifacts retain trees and training-window references. Long histories can make SQLite snapshots large; no retention/compaction policy is implemented.
+- Findings link to Stage 4 incidents, Stage 5 RCA, and Stage 6 blast-radius snapshots only when evidence event IDs match stored incident membership.
 - SQLite is a local single-writer store. There is no multi-host coordination, network REST server, retention/archival process, or asynchronous streaming correlation.
 - Full processed-event reevaluation on each run can become expensive as the local database grows.
 - Synthetic evaluation has easy, explicit labels and should not be read as production precision or recall.

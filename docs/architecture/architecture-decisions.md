@@ -76,6 +76,14 @@ Kafka/Kubernetes, a web framework, and live timestamps were deferred because the
 
 **Decision:** Label blast-radius membership as potential structural impact, attach incident observations separately, leave independent failure/root confirmation false, and expose the full configurable impact score factors. **Reason:** A dependency edge or RCA candidate does not prove an outage or causal propagation. **Trade-off:** The score supports transparent prioritization only and is not a probability or calibrated business loss.
 
+## ADR-019: Additive, reproducible anomaly intelligence
+
+**Decision:** Read Stage 3 processed events, construct service-specific strictly prior rolling baselines, preserve independent statistical and seeded Isolation Forest outputs, and write immutable fingerprinted findings to additive SQLite tables. **Reason:** Unusual behavior should be surfaced while preserving uncertainty and earlier incident/RCA semantics. The inspected environment had no scikit-learn installation and the project has no dependency manifest; a compact standard-library Isolation Forest avoids a mandatory package while retaining deterministic training metadata. **Trade-off:** It has limited external validation; the synthetic fixture shows weak ML and exact-pattern precision. Treat outputs as investigation evidence, not production alert classification.
+
+## ADR-020: Bounded explainable cross-service context
+
+**Decision:** Precompute directed reachability, group detector outputs by service/window, join only graph-reachable service pairs within a configured time lag, cap candidate pairs and emitted relationships, and retain event/window evidence plus competing explanations. **Reason:** An all-pairs prototype multiplied duplicate detector signals and produced excessive output; bounded joins are easier to inspect and control. **Trade-off:** Dense relationships can be truncated; the cap state is exposed and the result is contextual rather than causal.
+
 ## Rejected Stage 4 approaches
 
 - All-pairs comparison: rejected because dense/O(n²) work is uncontrolled; candidate generation is indexed and bounded.

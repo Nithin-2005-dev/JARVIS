@@ -1,0 +1,17 @@
+{
+  "window_seconds": 300,
+  "rolling_lookback_windows": 100,
+  "minimum_baseline_windows": 4,
+  "statistical_threshold": 3.0,
+  "isolation_trees": 48,
+  "isolation_sample_size": 64,
+  "isolation_minimum_samples": 12,
+  "random_seed": 17,
+  "pattern_minimum_support": 3,
+  "pattern_similarity_threshold": 0.8,
+  "pattern_pair_limit": 2000,
+  "cross_service_max_lag_seconds": 900,
+  "cross_service_max_relationships": 500,
+  "cross_service_max_candidate_pairs": 5000,
+  "version": "intelligence-v1"
+}

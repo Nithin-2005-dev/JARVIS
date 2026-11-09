@@ -46,3 +46,7 @@ RCA does not call or modify the Stage 4 engine. It consumes its stored edge evid
 ## Stage 6 interaction
 
 The dependency graph CLI builds/validates and stores the current graph version. An incident analysis loads Stage 4 membership/events and the latest Stage 5 snapshot. For competing or inconclusive RCA reports, the graph engine creates independent hypothetical outputs for each candidate and preserves the original uncertainty status.
+
+## Stage 7 interaction
+
+`IntelligenceEngine` reads Stage 3 processed payloads, optional Stage 4 incident membership, and optional Stage 6 graph snapshots. It extracts features and strictly prior baselines, runs separate detectors, then adds temporal, pattern, and dependency context. `SQLiteIntelligenceStore` writes features, baselines, findings, model artifacts, and run snapshots transactionally. Stage 5/6 IDs are linked only through matching incident evidence. Earlier event, incident, and RCA rows are not rewritten.

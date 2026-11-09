@@ -1,0 +1,208 @@
+{
+  "anomaly_ground_truth_window_count": 27,
+  "baseline_coverage": {
+    "evaluation_service_windows": 121,
+    "rate": 0.9917355371900827,
+    "ready": 120
+  },
+  "baseline_no_future_data_leakage": true,
+  "cross_service_candidate_pair_count": 393,
+  "cross_service_relationship_count": 393,
+  "cross_service_truncated_relationship_count": 0,
+  "dataset_event_count": 2432,
+  "detector_disagreement_window_count": 56,
+  "detector_settings": {
+    "machine_learning": {
+      "implementation": "isolation-forest-small-v1",
+      "name": "Isolation Forest",
+      "raw_score": "normalized expected partition path length",
+      "scaling": "not applied; axis-aligned random partitions are invariant to positive affine scaling",
+      "threshold": 0.62
+    },
+    "statistical": {
+      "name": "rolling mean/std",
+      "raw_score": "absolute z-like deviation",
+      "threshold": 3.0
+    }
+  },
+  "evaluation_duration_seconds": 0.31469,
+  "evaluation_window_index_range": [
+    20,
+    39
+  ],
+  "feature_window_count": 241,
+  "insufficient_data_rate": {
+    "all_service_windows": 241,
+    "rate": 0.1037344398340249,
+    "windows": 25
+  },
+  "limitations": [
+    "Synthetic incidents and baselines are manually authored and simplified.",
+    "Thresholds are configuration choices, not calibrated probabilities.",
+    "No claim of production precision, recall, or delay is made."
+  ],
+  "machine_learning": {
+    "detection_delay_sequence_count": 4,
+    "evaluation_service_window_count": 121,
+    "f1": 0.5168539325842697,
+    "false_negative": 4,
+    "false_positive": 39,
+    "false_positive_rate": 0.4148936170212766,
+    "ground_truth_positive_denominator": 27,
+    "mean_detection_delay_seconds": 0.0,
+    "negative_window_denominator": 94,
+    "precision": 0.3709677419354839,
+    "prediction_denominator": 62,
+    "recall": 0.8518518518518519,
+    "true_negative": 55,
+    "true_positive": 23
+  },
+  "methodology": "Time-ordered per-service window evaluation. Windows 0\u201319 precede the evaluation period; each scored window baseline/forest is trained only from strictly earlier windows. Classification is at service-window level; multiple features in one window count as one predicted anomaly.",
+  "model_no_future_data_leakage": true,
+  "no_future_data_leakage": true,
+  "pattern": {
+    "discovered_exact_signatures": 9,
+    "expected_recurring_signatures": 1,
+    "false_negative": 0,
+    "false_positive": 8,
+    "precision": 0.1111111111111111,
+    "recall": 1.0,
+    "true_positive": 1
+  },
+  "scenario_denominator": 12,
+  "scenario_names": [
+    "normal_stable_traffic",
+    "sudden_error_rate_increase",
+    "gradual_service_degradation",
+    "repeated_error_bursts",
+    "abnormal_event_frequency",
+    "cross_service_anomalies",
+    "dependency_degradation_precedes_dependents",
+    "cold_start_insufficient_history",
+    "missing_and_invalid_timestamps",
+    "detector_disagreement",
+    "benign_normal_variation",
+    "recurring_incident_fingerprints"
+  ],
+  "scenario_results": [
+    {
+      "scenario": "normal_stable_traffic",
+      "stable_training_windows": 100,
+      "status": "included_in_time_ordered_training"
+    },
+    {
+      "ground_truth_windows": 5,
+      "ml_detected": 5,
+      "ml_recall": 1.0,
+      "scenario": "sudden_error_rate_increase",
+      "statistical_detected": 3,
+      "statistical_recall": 0.6,
+      "status": "measured"
+    },
+    {
+      "ground_truth_windows": 15,
+      "ml_detected": 12,
+      "ml_recall": 0.8,
+      "scenario": "gradual_service_degradation",
+      "statistical_detected": 9,
+      "statistical_recall": 0.6,
+      "status": "measured"
+    },
+    {
+      "ground_truth_windows": 3,
+      "ml_detected": 3,
+      "ml_recall": 1.0,
+      "scenario": "repeated_error_bursts",
+      "statistical_detected": 2,
+      "statistical_recall": 0.6666666666666666,
+      "status": "measured"
+    },
+    {
+      "ground_truth_windows": 1,
+      "ml_detected": 1,
+      "ml_recall": 1.0,
+      "scenario": "abnormal_event_frequency",
+      "statistical_detected": 1,
+      "statistical_recall": 1.0,
+      "status": "measured"
+    },
+    {
+      "dependency_context_relationship_denominator": 3,
+      "dependency_context_relationships_found": 3,
+      "ground_truth_windows": 3,
+      "ml_detected": 2,
+      "ml_recall": 0.6666666666666666,
+      "scenario": "cross_service_anomalies",
+      "statistical_detected": 2,
+      "statistical_recall": 0.6666666666666666,
+      "status": "measured"
+    },
+    {
+      "dependency_context_relationship_denominator": 1,
+      "dependency_context_relationships_found": 1,
+      "ground_truth_windows": 2,
+      "ml_detected": 2,
+      "ml_recall": 1.0,
+      "scenario": "dependency_degradation_precedes_dependents",
+      "statistical_detected": 1,
+      "statistical_recall": 0.5,
+      "status": "measured"
+    },
+    {
+      "insufficient_baseline": true,
+      "observed_windows": 1,
+      "scenario": "cold_start_insufficient_history",
+      "status": "passed"
+    },
+    {
+      "invalid_timestamp_events": 2,
+      "scenario": "missing_and_invalid_timestamps",
+      "status": "passed"
+    },
+    {
+      "disagreeing_evaluation_windows": 46,
+      "scenario": "detector_disagreement",
+      "status": "observed"
+    },
+    {
+      "ml_false_alarms": 0,
+      "normal_variation_windows": 20,
+      "scenario": "benign_normal_variation",
+      "statistical_false_alarms": 0,
+      "status": "normal_false_positive_probe"
+    },
+    {
+      "ground_truth_windows": 3,
+      "ml_detected": 3,
+      "ml_recall": 1.0,
+      "scenario": "recurring_incident_fingerprints",
+      "statistical_detected": 2,
+      "statistical_recall": 0.6666666666666666,
+      "status": "measured"
+    }
+  ],
+  "statistical": {
+    "detection_delay_sequence_count": 4,
+    "evaluation_service_window_count": 121,
+    "f1": 0.8,
+    "false_negative": 9,
+    "false_positive": 0,
+    "false_positive_rate": 0.0,
+    "ground_truth_positive_denominator": 27,
+    "mean_detection_delay_seconds": 0.0,
+    "negative_window_denominator": 94,
+    "precision": 1.0,
+    "prediction_denominator": 18,
+    "recall": 0.6666666666666666,
+    "true_negative": 94,
+    "true_positive": 18
+  },
+  "timestamp_quality": {
+    "invalid_timestamp_events": 2,
+    "valid_timestamp_events": 2430
+  },
+  "training_window_index_range": [
+    0,
+    19
+  ]
+}

@@ -1,7 +1,18 @@
-# Stage 6 Test Strategy
+# Test Strategy
 
-Run the complete suite with `python3 -m unittest discover -s tests -v`. `tests/test_dependency_graph.py` covers graph direction, actual PayFlow fault scenarios, max depth/environment, alternate paths and uniqueness, duplicate/unknown/missing/self/cycle/disconnected validation, unknown root, deterministic scoring, version history, repeated persistence, Stage 4 incident membership, Stage 5 competing hypotheses, missing RCA, and synthetic evaluation. The existing Stage 1–5 suites remain unchanged and run in the same command.
+Run the complete regression suite with `python3 -m unittest discover -s tests -v`. It covers Stages 1–7; do not weaken earlier tests to accommodate a new stage.
 
-Run evaluation with `python3 -m payflow_simulator.dependency_graph.evaluate --output data/evaluation/stage6_dependency_metrics.json --dataset-dir data/evaluation`. The evaluator checks five known-root cases and one expected error. Its small denominators are included in the JSON report and are not predictive quality claims.
+## Stage 7 coverage
 
-CLI validation/graph checks use a temporary SQLite file during verification so a user database is not modified. End-to-end verification runs simulator -> ingestion -> processing -> correlation -> RCA -> dependency incident analysis in a temporary workspace.
+`tests/test_intelligence.py` verifies feature calculations and provenance, missing latency/resource data, UTC and invalid timestamps, fixed and rolling baselines, strict prior-window training, cold starts, zero variance, seeded Isolation Forest repeatability, late-event summaries, exact and approximate signatures, bounded pattern comparisons, cross-service dependency paths and unrelated services, competing detector outputs, Stage 4/5/6 evidence links, transaction rollback, idempotent historical snapshots, and synthetic time-ordered evaluation.
+
+Run the deterministic evaluation with `python3 -m payflow_simulator.intelligence.evaluation --output-dir data/evaluation`. The fixture includes 12 required scenario categories and records separate statistical/ML metrics, denominator counts, detection delay, baseline coverage, insufficient-data rate, recurring-pattern metrics, detector disagreement, and future-data leakage verification. The evaluation is a small handcrafted behavior check, not a production quality claim.
+
+Compile and whitespace checks:
+
+```bash
+python3 -m compileall -q payflow_simulator
+git diff --check
+```
+
+Stage 7 integration verification uses a temporary SQLite database for simulator -> ingestion -> processing -> correlation -> RCA -> Stage 6 graph -> intelligence. Intelligence persists to additive tables and leaves earlier event, incident, RCA, and blast-radius records unchanged.

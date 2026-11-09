@@ -1,4 +1,4 @@
-# J.A.R.V.I.S. — Stages 1–6: PayFlow Event Intelligence Prototype
+# J.A.R.V.I.S. — Stages 1–7: PayFlow Event Intelligence Prototype
 
 J.A.R.V.I.S. currently includes the Stage 1 deterministic PayFlow simulator and the Stage 2 multi-source event ingestion engine. Python 3.10+ is required; no third-party dependencies are used.
 
@@ -27,11 +27,14 @@ Use `python3 -m payflow_simulator.cli --help` for options. Scenarios: `all`, `no
 - `payflow_simulator/rca/`: candidate generation, evidence collection, transparent scoring, competing hypotheses, report snapshots, and synthetic evaluation.
 - `payflow_simulator/dependency_graph/`: service/dependency registry, graph validation/versioning, cycle-safe blast-radius analysis, Stage 4/5 integration, and evaluation.
 - `payflow_simulator/dependency_cli.py`: graph, validation, blast-radius, incident, and history CLI.
-- `tests/`: Stage 1–6 unit and integration tests.
+- `payflow_simulator/intelligence/`: feature extraction, rolling baselines, statistical and Isolation Forest detectors, temporal/pattern/cross-service analysis, SQLite persistence, and evaluation.
+- `tests/`: Stage 1–7 unit and integration tests.
 - `data/sample_events.jsonl`: generated sample.
 - `docs/`: architecture, engineering, specification, milestone and troubleshooting notes.
 
 The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events. Processing enriches and classifies records, handles event time, detects patterns, and writes recoverable output to SQLite. Stage 4 correlates processed records with explainable evidence. Stage 5 ranks competing root-cause hypotheses and permits inconclusive results. Stage 6 versions a directed service dependency graph and calculates potential structural blast radius with paths, criticality, and heuristic impact scores. It integrates with incidents and RCA snapshots without treating candidates as confirmed causes. See the [dependency graph architecture](docs/architecture/service-dependency-architecture.md), [blast-radius architecture](docs/architecture/blast-radius-architecture.md), [Stage 6 report](docs/milestones/milestone-06.md), and [known limitations](docs/troubleshooting/known-issues.md).
+
+Stage 7 builds service-window features and strictly prior baselines, keeps statistical and Isolation Forest outputs separate, discovers recurring signatures, and adds dependency context. Anomaly signals do not create incidents or root-cause claims. See [Stage 7 architecture](docs/architecture/advanced-intelligence-architecture.md) and the [known limitations](docs/troubleshooting/known-issues.md).
 
 ## Dependency graph and blast radius
 
@@ -58,3 +61,13 @@ python3 -m payflow_simulator.rca_cli --database data/events.sqlite compare INVES
 ```
 
 Inspect an incident with `show INCIDENT_ID`, `events INCIDENT_ID`, `evidence INCIDENT_ID`, and `history INCIDENT_ID`; inspect event neighbors with `related EVENT_ID`. Correlation scores are heuristics, not probabilities, and event relationships do not establish cause. RCA exposes `investigate`, `show`, `hypothesis`, `evidence`, `compare`, `history`, and `report`; see [RCA API/CLI](docs/specifications/rca-api.md). Reproduce Stage 4 evaluation with `python3 -m payflow_simulator.correlation.evaluate --output-dir data/evaluation`; reproduce Stage 5 evaluation and data with `python3 -m payflow_simulator.rca.evaluate --output data/evaluation/stage5_rca_metrics.json --dataset-dir data/evaluation`.
+
+## Stage 7 intelligence
+
+```bash
+python3 -m payflow_simulator.intelligence.intelligence_cli --database data/events.sqlite analyze
+python3 -m payflow_simulator.intelligence.intelligence_cli --database data/events.sqlite history
+python3 -m payflow_simulator.intelligence.intelligence_cli --database data/events.sqlite evaluate --output-dir data/evaluation
+```
+
+Component commands include `features`, `baseline`, `detect`, `temporal`, `patterns`, and `cross-service`. Raw detector scores are detector-specific heuristic outputs, not probabilities. Insufficient history is explicit. Reproduce the synthetic benchmark with `python3 -m payflow_simulator.intelligence.evaluation --output-dir data/evaluation`. See the [Intelligence API](docs/api/intelligence-api.md), [anomaly detector design](docs/architecture/anomaly-detection-architecture.md), [temporal intelligence](docs/architecture/temporal-intelligence.md), and [Stage 7 evaluation](docs/evaluation/stage-07-evaluation.md).
