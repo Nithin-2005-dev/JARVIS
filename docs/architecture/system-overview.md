@@ -28,3 +28,5 @@ Stage 4 reads processed payloads and writes explainable correlation edges, heuri
 # Stage 5 addition
 
 The Root Cause Analysis layer consumes Stage 4 incident membership, processed event payloads, and correlation evidence. It writes separately versioned investigation snapshots, candidate hypotheses, evidence assessments, and history to the same local SQLite database. It distinguishes observed facts from associations and configured inferences; reports can be inconclusive and do not confirm causes. See [RCA architecture](root-cause-analysis-architecture.md).
+
+Stage 6 adds an explicit, versioned service dependency graph and a reverse-edge blast-radius analysis. It stores graph snapshots and hypothetical analysis results in the shared SQLite database and can consume incident membership plus the latest RCA report without modifying either.

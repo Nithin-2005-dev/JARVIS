@@ -57,6 +57,19 @@
 
 Six deterministic scenarios with 15 observations: 5 labeled initiator cases and 1 no-answer case. Current measured top-1 is 1.0 (5/5), top-3 candidate recall 1.0 (5/5), inconclusive rate 1/6 (0.1667), false assertion 0/6 (0.0). One local in-memory run took 0.001357 seconds (11,053.07 events/s), excluding SQLite I/O. Results are specific to handcrafted synthetic cases and are not production accuracy estimates. See `data/evaluation/stage5_rca_metrics.json`.
 
+## Stage 6
+
+- [x] Inspect Stage 3 registry, Stage 4 incident storage, Stage 5 RCA snapshots, and repository test/docs patterns.
+- [x] Add typed service/dependency models, graph validation, deterministic versioning, cycle detection, and SQLite snapshots.
+- [x] Add reverse-edge blast-radius analysis, bounded paths, configurable heuristic scores, criticality/capabilities, and observed incident evidence.
+- [x] Integrate Stage 4 incidents and Stage 5 leading/competing/inconclusive hypotheses without selecting an uncertain winner.
+- [x] Add CLI/API, synthetic scenarios and ground truth, documentation, and Stage 1–5 regression coverage.
+- [x] Run final full-suite, end-to-end, evaluation, CLI, compile, diff, and status checks; record actual outputs in milestone 06.
+
+### Stage 6 verification summary
+
+Fourteen focused tests and 76 total regression tests pass. The nine-scenario fixture passed all direct/indirect set, path, uncertainty, duplicate, and cycle checks. A seed-42 temporary end-to-end run processed 63 events, formed nine incidents, generated nine RCA snapshots, and completed incident blast-radius analysis with deterministic repeat IDs. Exact commands and measured timings are in `milestone-06.md` and `data/evaluation/stage6_dependency_metrics.json`.
+
 ### Stage 4 synthetic evaluation and performance
 
 `python3 -m payflow_simulator.correlation.evaluate --output-dir data/evaluation` on the default 100-event fixture: 20 labeled three-event incidents and 20 unrelated simultaneous pairs. Pairwise co-membership: 60 ground-truth related pairs, 60 predicted, 60 true positives, 0 false positives, 0 false negatives; precision 1.000, recall 1.000. This fixture is intentionally controlled and is not a production accuracy estimate. One final local measurement reported 80 candidate pairs, 0.1012 s candidate generation, 0.0969 s relationship evaluation, 0.3138 s total run, 319 events/s, and 586,997 traced peak bytes. Timings vary by host.

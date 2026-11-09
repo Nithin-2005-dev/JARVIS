@@ -39,3 +39,14 @@
 - Shared resources and Stage 4 edges express context/relatedness and do not establish causal direction.
 - Synthetic metrics in `data/evaluation/stage5_rca_metrics.json` come from six handcrafted scenarios and should not be used as a production accuracy estimate.
 - Current candidate/resource comparison is quadratic in the size of one incident; very large incidents need indexed resource evidence.
+
+# Stage 6 dependency graph and blast-radius limitations
+
+- The PayFlow graph is static configuration derived from simulator behavior; topology is not discovered from deployments or runtime calls.
+- The retry queue is simulated. No broker or external mail-provider service node is modeled.
+- Blast radius means possible structural/business capability impact, not that a dependent service is down. Error events are observed signals, not independent health confirmation.
+- Criticality, dependency importance/confidence, depth decay, and fanout are heuristic inputs. Scores are not probabilities or measured business loss.
+- Simple-path enumeration is capped by `max_paths_per_service`; dense graphs may omit alternate paths and emit a warning.
+- Unknown endpoints and insufficiently verified edges remain visible. They may cause incomplete impact estimates until registry definitions are reviewed.
+- Incident integration reads the latest Stage 5 snapshot and does not rerun RCA or choose a winner among competing/inconclusive hypotheses.
+- SQLite graph/history records have no retention policy and remain a local single-host store.

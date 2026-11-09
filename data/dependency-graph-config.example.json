@@ -1,0 +1,152 @@
+{
+  "criticality_factors": {
+    "critical": 1.0,
+    "high": 0.8,
+    "low": 0.3,
+    "medium": 0.55,
+    "unknown": 0.25
+  },
+  "dependencies": [
+    {
+      "confidence": 0.85,
+      "dependency_type": "authentication",
+      "description": "Gateway authenticates the merchant before processing.",
+      "evidence_source": "simulator_flow",
+      "importance": 0.9,
+      "metadata": {},
+      "source_service_id": "api-gateway",
+      "target_service_id": "authentication-service",
+      "verification_status": "observed"
+    },
+    {
+      "confidence": 0.9,
+      "dependency_type": "synchronous_api",
+      "description": "Gateway forwards payment requests and returns payment results.",
+      "evidence_source": "simulator_flow",
+      "importance": 1.0,
+      "metadata": {},
+      "source_service_id": "api-gateway",
+      "target_service_id": "payment-service",
+      "verification_status": "observed"
+    },
+    {
+      "confidence": 0.95,
+      "dependency_type": "database",
+      "description": "Payment records are persisted by the database service.",
+      "evidence_source": "simulator_flow",
+      "importance": 1.0,
+      "metadata": {},
+      "source_service_id": "payment-service",
+      "target_service_id": "database-service",
+      "verification_status": "observed"
+    },
+    {
+      "confidence": 0.75,
+      "dependency_type": "message_queue",
+      "description": "Receipt work is generated only after payment authorization; the simulator shows notification retry queued after delivery failure.",
+      "evidence_source": "simulator_flow",
+      "importance": 0.45,
+      "metadata": {
+        "failure_blocks_payment": false,
+        "queue_is_simulated": true,
+        "retry_behavior": "queued"
+      },
+      "source_service_id": "notification-service",
+      "target_service_id": "payment-service",
+      "verification_status": "observed"
+    }
+  ],
+  "depth_decay": 0.85,
+  "fanout_base": 0.7,
+  "fanout_increment": 0.1,
+  "known_dependency_types": [
+    "synchronous_api",
+    "database",
+    "message_queue",
+    "authentication",
+    "cache",
+    "external_service",
+    "other"
+  ],
+  "max_paths_per_service": 100,
+  "services": [
+    {
+      "business_capability": "payment checkout",
+      "criticality": "high",
+      "description": "Accepts payment requests and returns responses.",
+      "environment": "development",
+      "metadata": {
+        "kind": "edge",
+        "team": "payments-platform",
+        "tier": 1
+      },
+      "service_id": "api-gateway",
+      "service_name": "API Gateway",
+      "service_type": "edge"
+    },
+    {
+      "business_capability": "identity and access",
+      "criticality": "high",
+      "description": "Authenticates the merchant before payment handling.",
+      "environment": "development",
+      "metadata": {
+        "kind": "backend",
+        "team": "identity",
+        "tier": 1
+      },
+      "service_id": "authentication-service",
+      "service_name": "Authentication Service",
+      "service_type": "backend"
+    },
+    {
+      "business_capability": "payment processing",
+      "criticality": "critical",
+      "description": "Creates and authorizes payment intents.",
+      "environment": "development",
+      "metadata": {
+        "kind": "backend",
+        "team": "payments",
+        "tier": 1
+      },
+      "service_id": "payment-service",
+      "service_name": "Payment Service",
+      "service_type": "backend"
+    },
+    {
+      "business_capability": "payment data persistence",
+      "criticality": "critical",
+      "description": "Persists payment records and can exhaust its connection pool.",
+      "environment": "development",
+      "metadata": {
+        "kind": "storage",
+        "team": "data-platform",
+        "tier": 1
+      },
+      "service_id": "database-service",
+      "service_name": "Database Service",
+      "service_type": "storage"
+    },
+    {
+      "business_capability": "customer notifications",
+      "criticality": "medium",
+      "description": "Sends receipts; failures are queued for retry.",
+      "environment": "development",
+      "metadata": {
+        "kind": "backend",
+        "team": "messaging",
+        "tier": 2
+      },
+      "service_id": "notification-service",
+      "service_name": "Notification Service",
+      "service_type": "backend"
+    }
+  ],
+  "verification_factors": {
+    "configured": 0.65,
+    "observed": 0.8,
+    "unknown": 0.3,
+    "unverified": 0.4,
+    "verified": 1.0
+  },
+  "version_label": "payflow-v1"
+}

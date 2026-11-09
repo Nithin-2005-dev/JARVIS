@@ -1,0 +1,89 @@
+{
+  "authentication_failure": {
+    "directly_impacted": [
+      "api-gateway"
+    ],
+    "expected_check": null,
+    "expected_error": null,
+    "expected_findings": [],
+    "indirectly_impacted": [],
+    "root_service_id": "authentication-service"
+  },
+  "bounded_database_failure": {
+    "directly_impacted": [
+      "payment-service"
+    ],
+    "expected_check": null,
+    "expected_error": null,
+    "expected_findings": [],
+    "indirectly_impacted": [],
+    "root_service_id": "database-service"
+  },
+  "cycle_safe_analysis": {
+    "directly_impacted": [],
+    "expected_check": "finite_unique_traversal_and_cycle_finding",
+    "expected_error": null,
+    "expected_findings": [],
+    "indirectly_impacted": [],
+    "root_service_id": null
+  },
+  "database_failure": {
+    "directly_impacted": [
+      "payment-service"
+    ],
+    "expected_check": null,
+    "expected_error": null,
+    "expected_findings": [],
+    "indirectly_impacted": [
+      "api-gateway",
+      "notification-service"
+    ],
+    "root_service_id": "database-service"
+  },
+  "duplicate_dependency_edge": {
+    "directly_impacted": [],
+    "expected_check": "duplicate_edge_collapsed",
+    "expected_error": null,
+    "expected_findings": [],
+    "indirectly_impacted": [],
+    "root_service_id": null
+  },
+  "notification_failure": {
+    "directly_impacted": [],
+    "expected_check": null,
+    "expected_error": null,
+    "expected_findings": [],
+    "indirectly_impacted": [],
+    "root_service_id": "notification-service"
+  },
+  "payment_failure": {
+    "directly_impacted": [
+      "api-gateway",
+      "notification-service"
+    ],
+    "expected_check": null,
+    "expected_error": null,
+    "expected_findings": [],
+    "indirectly_impacted": [],
+    "root_service_id": "payment-service"
+  },
+  "uncertain_external_dependency": {
+    "directly_impacted": [],
+    "expected_check": null,
+    "expected_error": "unknown_service",
+    "expected_findings": [],
+    "indirectly_impacted": [],
+    "root_service_id": "mail-provider"
+  },
+  "unknown_dependency_target": {
+    "directly_impacted": [],
+    "expected_check": null,
+    "expected_error": null,
+    "expected_findings": [
+      "missing_target_service",
+      "unknown_dependency_type"
+    ],
+    "indirectly_impacted": [],
+    "root_service_id": null
+  }
+}

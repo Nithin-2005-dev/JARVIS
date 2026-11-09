@@ -1,0 +1,137 @@
+{
+  "direct_impact_scenario_accuracy": 1.0,
+  "direct_impact_scenario_denominator": 5,
+  "direct_service_expected_denominator": 5,
+  "direct_service_precision": 1.0,
+  "direct_service_recall": 1.0,
+  "duplicate_service_handling": "impacted services are unique by service_id; tested separately in unit suite",
+  "evaluation_duration_seconds": 0.002435,
+  "graph_version": "96c224a7fd61dc8be6c351ca9300e115a3c24839dab4655798e4fa29c300db31",
+  "indirect_impact_scenario_accuracy": 1.0,
+  "indirect_impact_scenario_denominator": 5,
+  "indirect_service_expected_denominator": 2,
+  "indirect_service_precision": 1.0,
+  "indirect_service_recall": 1.0,
+  "known_root_scenarios": 5,
+  "methodology": "Nine deterministic graph validation/impact scenarios over the configured five-service PayFlow topology; expected impacted sets are manually specified. Unknown root/dependency cases are intentional cannot-establish scenarios; duplicate-edge and cyclic-topology cases evaluate structural safeguards. This evaluates contract behavior, not real-world failure prediction.",
+  "path_validity_scenario_denominator": 5,
+  "path_validity_scenario_rate": 1.0,
+  "scenario_count": 9,
+  "scenarios": [
+    {
+      "direct_actual": [
+        "payment-service"
+      ],
+      "direct_correct": true,
+      "direct_expected": [
+        "payment-service"
+      ],
+      "indirect_actual": [
+        "api-gateway",
+        "notification-service"
+      ],
+      "indirect_correct": true,
+      "indirect_expected": [
+        "api-gateway",
+        "notification-service"
+      ],
+      "paths_valid": true,
+      "scenario": "database_failure",
+      "scores_deterministic": true,
+      "total_impacted": 3
+    },
+    {
+      "direct_actual": [
+        "api-gateway",
+        "notification-service"
+      ],
+      "direct_correct": true,
+      "direct_expected": [
+        "api-gateway",
+        "notification-service"
+      ],
+      "indirect_actual": [],
+      "indirect_correct": true,
+      "indirect_expected": [],
+      "paths_valid": true,
+      "scenario": "payment_failure",
+      "scores_deterministic": true,
+      "total_impacted": 2
+    },
+    {
+      "direct_actual": [],
+      "direct_correct": true,
+      "direct_expected": [],
+      "indirect_actual": [],
+      "indirect_correct": true,
+      "indirect_expected": [],
+      "paths_valid": true,
+      "scenario": "notification_failure",
+      "scores_deterministic": true,
+      "total_impacted": 0
+    },
+    {
+      "direct_actual": [
+        "api-gateway"
+      ],
+      "direct_correct": true,
+      "direct_expected": [
+        "api-gateway"
+      ],
+      "indirect_actual": [],
+      "indirect_correct": true,
+      "indirect_expected": [],
+      "paths_valid": true,
+      "scenario": "authentication_failure",
+      "scores_deterministic": true,
+      "total_impacted": 1
+    },
+    {
+      "direct_actual": [
+        "payment-service"
+      ],
+      "direct_correct": true,
+      "direct_expected": [
+        "payment-service"
+      ],
+      "indirect_actual": [],
+      "indirect_correct": true,
+      "indirect_expected": [],
+      "paths_valid": true,
+      "scenario": "bounded_database_failure",
+      "scores_deterministic": true,
+      "total_impacted": 1
+    },
+    {
+      "expected_error": "unknown_service",
+      "passed": true,
+      "scenario": "uncertain_external_dependency"
+    },
+    {
+      "actual_findings": [
+        "missing_target_service",
+        "unknown_dependency_type"
+      ],
+      "expected_findings": [
+        "missing_target_service",
+        "unknown_dependency_type"
+      ],
+      "passed": true,
+      "scenario": "unknown_dependency_target"
+    },
+    {
+      "expected_check": "duplicate_edge_collapsed",
+      "passed": true,
+      "scenario": "duplicate_dependency_edge"
+    },
+    {
+      "expected_check": "finite_unique_traversal_and_cycle_finding",
+      "passed": true,
+      "scenario": "cycle_safe_analysis"
+    }
+  ],
+  "structural_behavior_scenarios": 2,
+  "structural_behavior_scenarios_passed": true,
+  "uncertain_scenario_count": 2,
+  "uncertain_scenario_passed": true
+}

@@ -1,4 +1,4 @@
-# J.A.R.V.I.S. — Stages 1–5: PayFlow Event Intelligence Prototype
+# J.A.R.V.I.S. — Stages 1–6: PayFlow Event Intelligence Prototype
 
 J.A.R.V.I.S. currently includes the Stage 1 deterministic PayFlow simulator and the Stage 2 multi-source event ingestion engine. Python 3.10+ is required; no third-party dependencies are used.
 
@@ -24,11 +24,26 @@ Use `python3 -m payflow_simulator.cli --help` for options. Scenarios: `all`, `no
 - `payflow_simulator/process_cli.py`: processing runner.
 - `payflow_simulator/correlation/`: candidate generation, evidence scoring, incident lifecycle, SQLite persistence, and synthetic evaluation.
 - `payflow_simulator/correlation_cli.py`: correlation and incident investigation CLI.
-- `tests/`: Stage 1–4 unit and integration tests.
+- `payflow_simulator/rca/`: candidate generation, evidence collection, transparent scoring, competing hypotheses, report snapshots, and synthetic evaluation.
+- `payflow_simulator/dependency_graph/`: service/dependency registry, graph validation/versioning, cycle-safe blast-radius analysis, Stage 4/5 integration, and evaluation.
+- `payflow_simulator/dependency_cli.py`: graph, validation, blast-radius, incident, and history CLI.
+- `tests/`: Stage 1–6 unit and integration tests.
 - `data/sample_events.jsonl`: generated sample.
 - `docs/`: architecture, engineering, specification, milestone and troubleshooting notes.
 
-The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events. The processing command enriches and classifies ingested rows, annotates event-time windows, detects repeat/frequency patterns, and writes recoverable output to the same SQLite database. Stage 4 correlates processed records with explainable evidence, conservative incident grouping, stable IDs, and history. Stage 5 ranks competing root-cause hypotheses over incident evidence, preserves report snapshots, and explicitly allows inconclusive outcomes. It does not confirm causes or equate correlation with causation. See the [RCA architecture](docs/architecture/root-cause-analysis-architecture.md), [Stage 5 report](docs/milestones/milestone-05.md), and [known limitations](docs/troubleshooting/known-issues.md).
+The five payment services remain represented as simulator event producers. Ingestion accepts JSON/JSONL, CSV, REST GET, and simulated live events. Processing enriches and classifies records, handles event time, detects patterns, and writes recoverable output to SQLite. Stage 4 correlates processed records with explainable evidence. Stage 5 ranks competing root-cause hypotheses and permits inconclusive results. Stage 6 versions a directed service dependency graph and calculates potential structural blast radius with paths, criticality, and heuristic impact scores. It integrates with incidents and RCA snapshots without treating candidates as confirmed causes. See the [dependency graph architecture](docs/architecture/service-dependency-architecture.md), [blast-radius architecture](docs/architecture/blast-radius-architecture.md), [Stage 6 report](docs/milestones/milestone-06.md), and [known limitations](docs/troubleshooting/known-issues.md).
+
+## Dependency graph and blast radius
+
+```bash
+python3 -m payflow_simulator.dependency_cli validate
+python3 -m payflow_simulator.dependency_cli graph
+python3 -m payflow_simulator.dependency_cli blast-radius --service database-service --max-depth 3
+python3 -m payflow_simulator.dependency_cli incident --incident-id INCIDENT_ID
+python3 -m payflow_simulator.dependency_cli history --incident-id INCIDENT_ID
+```
+
+Graph direction is `A -> B` meaning “A depends on B”; impact traversal follows reverse edges. Scores are heuristic structural impact scores, not probabilities. Competing or inconclusive RCA candidates are analyzed as separate hypothetical scenarios. See the [Dependency Graph API](docs/api/dependency-graph-api.md) and [Blast Radius API](docs/api/blast-radius-api.md). Reproduce Stage 6 evaluation artifacts with `python3 -m payflow_simulator.dependency_graph.evaluate --output data/evaluation/stage6_dependency_metrics.json --dataset-dir data/evaluation`.
 
 ## Correlation and investigation
 

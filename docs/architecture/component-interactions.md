@@ -42,3 +42,7 @@ sequenceDiagram
 ```
 
 RCA does not call or modify the Stage 4 engine. It consumes its stored edge evidence and preserves the distinction between relationship and cause.
+
+## Stage 6 interaction
+
+The dependency graph CLI builds/validates and stores the current graph version. An incident analysis loads Stage 4 membership/events and the latest Stage 5 snapshot. For competing or inconclusive RCA reports, the graph engine creates independent hypothetical outputs for each candidate and preserves the original uncertainty status.

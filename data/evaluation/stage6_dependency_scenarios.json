@@ -1,0 +1,68 @@
+{
+  "graph_version": "96c224a7fd61dc8be6c351ca9300e115a3c24839dab4655798e4fa29c300db31",
+  "scenarios": [
+    {
+      "direct": [
+        "payment-service"
+      ],
+      "indirect": [
+        "api-gateway",
+        "notification-service"
+      ],
+      "root": "database-service",
+      "scenario": "database_failure"
+    },
+    {
+      "direct": [
+        "api-gateway",
+        "notification-service"
+      ],
+      "indirect": [],
+      "root": "payment-service",
+      "scenario": "payment_failure"
+    },
+    {
+      "direct": [],
+      "indirect": [],
+      "root": "notification-service",
+      "scenario": "notification_failure"
+    },
+    {
+      "direct": [
+        "api-gateway"
+      ],
+      "indirect": [],
+      "root": "authentication-service",
+      "scenario": "authentication_failure"
+    },
+    {
+      "direct": [
+        "payment-service"
+      ],
+      "indirect": [],
+      "max_depth": 1,
+      "root": "database-service",
+      "scenario": "bounded_database_failure"
+    },
+    {
+      "expected_error": "unknown_service",
+      "root": "mail-provider",
+      "scenario": "uncertain_external_dependency"
+    },
+    {
+      "expected_findings": [
+        "missing_target_service",
+        "unknown_dependency_type"
+      ],
+      "scenario": "unknown_dependency_target"
+    },
+    {
+      "expected_check": "duplicate_edge_collapsed",
+      "scenario": "duplicate_dependency_edge"
+    },
+    {
+      "expected_check": "finite_unique_traversal_and_cycle_finding",
+      "scenario": "cycle_safe_analysis"
+    }
+  ]
+}
