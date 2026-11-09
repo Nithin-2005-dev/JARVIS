@@ -58,20 +58,28 @@ class IngestionEngine:
         started = time.perf_counter()
         received = accepted = rejected = duplicates = 0
         records = adapter.records() if hasattr(adapter, "records") else adapter
-        for record in records:
-            received += 1
-            try:
+        try:
+            for record in records:
+                received += 1
                 if record.error:
-                    raise ValueError(record.error)
-                event = normalize_event(record.data)
+                    rejected += 1
+                    self._quarantine(Rejection(record.adapter, record.locator, record.error, record.data))
+                    continue
+                try:
+                    event = normalize_event(record.data)
+                except (TypeError, ValueError) as exc:
+                    rejected += 1
+                    item = Rejection(record.adapter, record.locator, str(exc), record.data)
+                    self._quarantine(item)
+                    continue
+                # Persistence errors are operational failures, not bad input;
+                # let them surface instead of misclassifying/quarantining data.
                 if self.store.insert_if_new(event, record.adapter, record.locator):
                     accepted += 1
                 else:
                     duplicates += 1
-            except Exception as exc:
-                rejected += 1
-                item = Rejection(record.adapter, record.locator, str(exc), record.data)
-                self._quarantine(item)
+        finally:
+            self.store.flush()
         duration = time.perf_counter() - started
         rate = received / duration if duration > 0 else 0.0
         return IngestionReport(received, accepted, rejected, duplicates, duration, rate)

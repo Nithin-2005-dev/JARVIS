@@ -35,7 +35,9 @@ def normalize_event(value: Any) -> Event:
         raise ValueError("timestamp must be a valid ISO-8601 value") from exc
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise ValueError("timestamp must include a timezone")
-    data["timestamp"] = parsed.astimezone(timezone.utc).isoformat(timespec="microseconds").rstrip("0").rstrip(".").replace("+00:00", "Z")
+    utc_timestamp = parsed.astimezone(timezone.utc)
+    fraction = f".{utc_timestamp.microsecond:06d}".rstrip("0") if utc_timestamp.microsecond else ""
+    data["timestamp"] = utc_timestamp.strftime("%Y-%m-%dT%H:%M:%S") + fraction + "Z"
     if not isinstance(data["severity"], str):
         raise ValueError("severity must be a string")
     severity = re.sub(r"[\s-]+", "_", data["severity"].strip().upper())

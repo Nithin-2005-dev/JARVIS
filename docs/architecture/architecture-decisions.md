@@ -19,3 +19,15 @@
 ## Rejected approaches
 
 Kafka/Kubernetes, a web framework, and live timestamps were deferred because they add operational complexity or reduce reproducibility before the event contract is established.
+
+## ADR-005: Common streaming source adapter contract
+
+**Decision:** Adapters yield `SourceRecord` items through a `records()` method. **Reason:** File, HTTP, and live inputs can be added without branching in the core engine. **Trade-off:** Each adapter translates source framing and parse failures into records.
+
+## ADR-006: SQLite idempotent local storage
+
+**Decision:** Store canonical JSON payloads in local SQLite with `event_id` as the primary key. **Reason:** This gives durable cross-run idempotency without distributed infrastructure. **Trade-off:** A local database is single-host; commit batches balance throughput and crash durability.
+
+## ADR-007: Append-only quarantine JSONL
+
+**Decision:** Preserve rejected raw payloads with reason and source locator in JSONL. **Reason:** Invalid inputs remain inspectable without blocking valid records in the same batch. **Trade-off:** Operators must manage quarantine retention and file growth.

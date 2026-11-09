@@ -125,7 +125,7 @@ class RESTAPIAdapter:
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 body = response.read().decode("utf-8")
                 content_type = response.headers.get("Content-Type", "").lower()
-                is_jsonl = "jsonl" in content_type or self.url.lower().split("?", 1)[0].endswith((".jsonl", ".ndjson"))
+                is_jsonl = any(marker in content_type for marker in ("jsonl", "ndjson")) or self.url.lower().split("?", 1)[0].endswith((".jsonl", ".ndjson"))
             yield from _decoded_json_records(body, "rest_api", self.url, is_jsonl)
         except (HTTPError, URLError, TimeoutError, OSError, UnicodeError) as exc:
             yield SourceRecord(None, "rest_api", self.url, f"HTTP source error: {exc}")

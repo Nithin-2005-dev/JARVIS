@@ -15,7 +15,7 @@ from uuid import uuid4
 from payflow_simulator.ingestion.adapters import CSVFileAdapter, JSONFileAdapter, LiveEventAdapter, RESTAPIAdapter
 from payflow_simulator.ingestion.engine import IngestionEngine
 from payflow_simulator.ingestion.storage import SQLiteEventStore
-from payflow_simulator.simulator import Scenario, Simulator, write_jsonl
+from payflow_simulator.simulator import Scenario, Simulator
 
 
 class EventHandler(BaseHTTPRequestHandler):
@@ -108,6 +108,22 @@ class IngestionTests(unittest.TestCase):
         self.assertEqual(store.get(self.base["event_id"])["severity"], "WARNING")
         store.close()
 
+    def test_rest_api_ndjson_content_type(self):
+        other = deepcopy(self.base)
+        other["event_id"] = str(uuid4())
+        EventHandler.payload = (json.dumps(self.base) + "\n" + json.dumps(other) + "\n").encode()
+        EventHandler.content_type = "application/x-ndjson"
+        server = ThreadingHTTPServer(("127.0.0.1", 0), EventHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            report = self.engine().ingest(RESTAPIAdapter(f"http://127.0.0.1:{server.server_port}/stream"))
+        finally:
+            server.shutdown()
+            thread.join()
+            server.server_close()
+        self.assertEqual((report.received, report.accepted, report.rejected), (2, 2, 0))
+
     def test_normalization_and_validation_failures_are_isolated(self):
         good = deepcopy(self.base)
         good["timestamp"] = "2025-01-15T07:00:00-05:00"
@@ -130,10 +146,14 @@ class IngestionTests(unittest.TestCase):
         bad_uuid = deepcopy(self.base)
         bad_uuid["event_id"] = "not-a-uuid"
         invalids.append(bad_uuid)
+        bad_type = deepcopy(self.base)
+        bad_type["event_id"] = str(uuid4())
+        bad_type["service"] = 7
+        invalids.append(bad_type)
         batch = [good, *invalids]
         report = self.engine().ingest(LiveEventAdapter(batch))
-        self.assertEqual((report.received, report.accepted, report.rejected), (5, 1, 4))
-        self.assertEqual(len(self.quarantine.read_text(encoding="utf-8").splitlines()), 4)
+        self.assertEqual((report.received, report.accepted, report.rejected), (6, 1, 5))
+        self.assertEqual(len(self.quarantine.read_text(encoding="utf-8").splitlines()), 5)
         store = SQLiteEventStore(self.db_path)
         normalized = store.get(good["event_id"])
         self.assertEqual(normalized["timestamp"], "2025-01-15T12:00:00Z")
@@ -154,6 +174,19 @@ class IngestionTests(unittest.TestCase):
         events = Simulator(seed=9).generate(Scenario.NORMAL, payments=1)
         report = self.engine().ingest(LiveEventAdapter(events, "simulated_live"))
         self.assertEqual(report.accepted, len(events))
+
+    def test_storage_failure_is_not_misclassified_as_bad_input(self):
+        class BrokenStore:
+            def insert_if_new(self, *_args):
+                raise OSError("disk unavailable")
+
+            def flush(self):
+                pass
+
+        engine = IngestionEngine(BrokenStore(), self.quarantine)
+        with self.assertRaisesRegex(OSError, "disk unavailable"):
+            engine.ingest(LiveEventAdapter([self.base]))
+        self.assertFalse(self.quarantine.exists())
 
     def test_large_jsonl_batch_streams_and_reports_throughput(self):
         path = self.root / "large.jsonl"

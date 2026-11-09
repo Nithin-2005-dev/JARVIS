@@ -1,4 +1,4 @@
-# Event schema v0.1
+# Event schema v0.2
 
 Each JSONL row has exactly the following keys:
 
@@ -16,4 +16,6 @@ Each JSONL row has exactly the following keys:
 
 Types: `request_received`, `authenticated`, `payment_created`, `db_query`, `db_pool_exhausted`, `payment_processed`, `downstream_failure`, `notification_sent`, `request_completed`, `request_failed`.
 
-`validate_event` rejects missing or extra keys, empty required strings, malformed UUIDs/timestamps, unsupported enum values, and non-object metadata. Metadata fields are not otherwise constrained in v0.1.
+The canonical v0.2 representation remains backward-compatible with Stage 1's nine top-level keys. Ingestion normalizes UUID strings to canonical lowercase form, timestamps to UTC `Z`, severity aliases to the enum, service identifiers to lowercase kebab case, and event type spacing/hyphens to lowercase underscores. Event type values must still be in the supported set. `source` and the entire metadata object are retained without adding ingestion-only keys; adapter and record locator provenance is stored alongside the payload in SQLite or quarantine records.
+
+`validate_event` rejects missing or extra keys, empty required strings, malformed UUIDs/timestamps, unsupported enum values, and non-object metadata. Metadata contents are not otherwise constrained.
